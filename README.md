@@ -30,6 +30,10 @@ SmartContractRAG answers questions about **public smart-contract audit reports**
   document + page, so a reviewer can verify the claim.
 - **Guardrails**: input validation (empty/too-long/injected queries) and output
   verification (grounded? sourced?) wrap the whole flow.
+- **Eval pipeline**: a golden dataset + dual judge (deterministic heuristic in
+  CI, LLM-as-judge locally) scores faithfulness, answer relevance, citation
+  accuracy, context precision/recall and hallucination rate, with a regression
+  guard that fails CI on quality degradation.
 
 Everything runs on a **local Ollama model (`qwen2.5-coder:7b`)** and a local
 embedder — **no cloud, no API keys, no paid services**.
@@ -88,7 +92,7 @@ deterministic fakes:
 - `Generator` → real `LLMGenerator` (Ollama) / scripted fake
 - `Reranker`, `GroundedTextCheck`, guardrails — all injectable
 
-This is what makes the **40+ deterministic unit tests** hermetic: they run in
+This is what makes the **~192 deterministic unit tests** hermetic: they run in
 CI with **no Ollama, no ChromaDB server, and no network**.
 
 ## Stack
@@ -98,7 +102,7 @@ CI with **no Ollama, no ChromaDB server, and no network**.
 - **sentence-transformers** `all-MiniLM-L6-v2` (local) — embeddings
 - **ChromaDB** — persistent, in-process vector store
 - **PyMuPDF** — PDF text extraction with page provenance
-- **pytest** — 40+ deterministic tests + live-path scripts
+- **pytest** — ~192 deterministic tests (unit + eval pipeline) + live-path scripts
 
 ## Getting Started
 
@@ -133,6 +137,44 @@ PYTHONPATH=src python -m smart_contract_rag.cli \
 
 ## Evaluation & Integrity
 
+The project ships a full **eval pipeline** (`src/smart_contract_rag/evals/`) so
+quality is measured, not assumed — and regressions are caught in CI before they
+ship:
+
+- **Golden dataset**: `data/evals/golden_set.json` — 14 curated
+  (question, expected-answer) cases across the DeFi vulnerability topics the
+  corpus covers (reentrancy, access control, oracle manipulation, flash loans,
+  …), including 2 trap questions that the system must refuse.
+- **Metrics** (`metrics.py`): deterministic, dependency-free scoring of
+  faithfulness/grounding, answer relevance, citation accuracy, context
+  precision/recall, correct-refusal rate and hallucination rate.
+- **Dual judge** (`judge.py`): `HeuristicJudge` (lexical, fully reproducible —
+  the CI default) and `OllamaJudge` (LLM-as-judge, 0–5 structured scoring on
+  the local model when available).
+- **Runner + regression guard** (`runner.py`): `run_eval()` collapses the
+  per-case scores into an `EvalReport` and compares them against
+  `RegressionThresholds` — floors for faithfulness/relevance/recall/citations,
+  a ceiling for hallucination rate — producing a **PASS / WARN / FAIL** verdict.
+
+### Run the eval
+
+```bash
+# Deterministic mode (no Ollama, no network) — what CI runs:
+python scripts/run_eval.py --no-llm-judge
+
+# LLM-as-judge mode (requires Ollama reachable at $OLLAMA_URL):
+PYTHONPATH=src python scripts/run_eval.py
+
+# Machine-readable output + topic filter:
+PYTHONPATH=src python scripts/run_eval.py --json --topic reentrancy
+```
+
+The script exits with a semantic code: `0` = PASS, `1` = FAIL (a metric
+breached its threshold), `2` = WARN (approaching a threshold) — so CI can gate
+on it.
+
+### Runtime integrity checks
+
 - **Anti-hallucination**: the grounding check (`NaiveGroundedTextCheck`)
   computes the ratio of the answer's substantive terms that appear in the
   retrieved evidence. Below a configurable threshold, the pipeline refuses
@@ -143,22 +185,29 @@ PYTHONPATH=src python -m smart_contract_rag.cli \
   query terms, reducing noise from purely-semantic near-misses.
 - **Deterministic test surface**: chunker boundaries, embedding determinism,
   store/retriever correctness, rerank ordering, grounding thresholds, guardrail
-  rejection, and the full pipeline flow — all covered in CI with fakes.
+  rejection, the full pipeline flow, and the eval pipeline itself (dataset
+  validation, metrics, judges, regression verdicts) — all covered in CI with
+  fakes.
 
 ## Roadmap
 
-- **Eval pipeline (Phase 2)**: golden dataset + LLM-as-judge for answer
-  faithfulness/latency regression, wired into CI.
+- ✅ **Eval pipeline (Phase 2, done)**: golden dataset + dual judge
+  (deterministic heuristic + LLM-as-judge) for faithfulness/relevance/
+  citation/context scoring and hallucination-rate regression, wired into CI via
+  `scripts/run_eval.py` exit codes (PASS/WARN/FAIL).
 - **Live demo**: a small query UI (Hugging Face Spaces / Streamlit).
 - **Larger corpus**: expand the manifest with more published audits + threat models.
+- **Stronger judge**: add a semantic-entailment judge (cross-encoder) alongside
+  the lexical and LLM judges.
 
 ## Limitations
 
 - **Local model latency**: `qwen2.5-coder:7b` on CPU is slower than cloud LLMs;
   production deployments would benefit from a GPU.
 - **Token-level grounding** is a heuristic: it detects *absence* of evidence
-  well, but is not a full semantic entailment check. The eval pipeline (next
-  phase) strengthens this with an LLM-as-judge.
+  well, but is not a full semantic entailment check. The eval pipeline measures
+  this gap: the `OllamaJudge` (LLM-as-judge) scores faithfulness semantically
+  when available, and a semantic-entailment judge is planned (see Roadmap).
 - **Corpus scope**: the manifest currently points at 10 public Trail of Bits
   reviews; it is a demonstration corpus, not an exhaustive security database.
 - **Educational scope**: the tool aids review but is **not** a substitute for a

@@ -1,0 +1,140 @@
+[
+  {
+    "id": "ev-001",
+    "question": "What is a reentrancy attack and why is it dangerous in DeFi?",
+    "topic": "reentrancy",
+    "expected_keywords": ["external", "call", "state", "reentrant", "withdraw", "checks-effects-interactions"],
+    "relevant_doc_id": "aave-v3",
+    "relevant_doc_hint": "The Aave V3 review covers reentrancy in withdraw/transfer flows.",
+    "ground_truth": "A reentrancy attack exploits a function that makes an external call before updating its state, allowing the callee to re-enter the original function and repeat the operation. In DeFi this is dangerous because it can drain funds from a contract by recursively withdrawing or manipulating balances. The checks-effects-interactions pattern mitigates it by performing all state updates before any external call.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-002",
+    "question": "How does the checks-effects-interactions pattern protect against reentrancy?",
+    "topic": "reentrancy",
+    "expected_keywords": ["state", "update", "external", "call", "checks", "effects", "interactions", "reentrancy"],
+    "relevant_doc_id": "balancer-managedpool",
+    "relevant_doc_hint": "Balancer Managed Pool review discusses safe transfer ordering.",
+    "ground_truth": "The checks-effects-interactions pattern ensures that a contract performs all state-changing operations (effects) before it makes any external calls (interactions). This prevents a malicious callee from re-entering the contract and exploiting stale or already-updated state. It is a standard mitigation for reentrancy found throughout DeFi contracts.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-003",
+    "question": "What kind of vulnerability can arise from missing or weak access control on privileged functions?",
+    "topic": "access_control",
+    "expected_keywords": ["owner", "onlyOwner", "privileged", "authorization", "access", "control", "permission"],
+    "relevant_doc_id": "0x-protocol",
+    "relevant_doc_hint": "The 0x Protocol review covers privileged exchange/admin functions.",
+    "ground_truth": "Missing or weak access control lets an unauthorized caller invoke privileged functions such as changing fees, pausing, upgrading, or transferring funds. If critical operations are only protected by a single owner key or a missing modifier, an attacker or a compromised key can take over the contract. Access control must be explicit, least-privilege, and centralized on an auditable set of addresses.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-004",
+    "question": "What is the risk of integer overflow or underflow in ERC20 token transfers and exchange math?",
+    "topic": "integer_overflow",
+    "expected_keywords": ["overflow", "underflow", "uint256", "arithmetic", "addition", "multiplication", "wrap"],
+    "relevant_doc_id": "balancerv2",
+    "relevant_doc_hint": "The Balancer V2 review covers arithmetic in balance/exchange math.",
+    "ground_truth": "Integer overflow or underflow occurs when arithmetic exceeds the range of the integer type (for example uint256), wrapping to an unexpected small or large value. In token transfers and exchange math this can let an attacker mint tokens, manipulate balances, or corrupt pool invariants. Solidity 0.8+ and SafeMath/checked arithmetic prevent such wrapping in production code.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-005",
+    "question": "How can an attacker manipulate the price oracle used by a lending or pool protocol?",
+    "topic": "oracle_manipulation",
+    "expected_keywords": ["oracle", "price", "manipulation", "flash", "reserve", "slippage", "twap"],
+    "relevant_doc_id": "balancer-managedpool",
+    "relevant_doc_hint": "Balancer and lending reports describe oracle price manipulation attacks.",
+    "ground_truth": "An attacker can manipulate an oracle by moving the price in a single transaction with a flash loan, then trading against the stale or manipulated price. This is especially dangerous if the protocol reads a spot price from a pool it does not control. Robust designs use time-weighted average prices (TWAP), multiple independent oracles, or circuit breakers to resist single-transaction manipulation.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-006",
+    "question": "What role do flash loans play in enabling DeFi exploits?",
+    "topic": "flash_loans",
+    "expected_keywords": ["flash", "loan", "liquidity", "collateral", "capital", "single", "transaction"],
+    "relevant_doc_id": "beanstalk-security",
+    "relevant_doc_hint": "Beanstalk review discusses flash-loan-enabled exploits.",
+    "ground_truth": "Flash loans let an attacker borrow large amounts of capital within a single transaction without collateral, on condition it is repaid in the same transaction. This lets a well-capitalized attacker manipulate oracles, drain liquidity pools, or force a liquidation without holding the assets beforehand. Flash loans amplify works in oracle-manipulation and price-spike exploits.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-007",
+    "question": "What is a privilege escalation vulnerability in smart contracts?",
+    "topic": "privilege_escalation",
+    "expected_keywords": ["escalation", "privilege", "admin", "role", "upgrade", "authorization", "access"],
+    "relevant_doc_id": "increment-security",
+    "relevant_doc_hint": "The Increment review covers admin/role-based privilege paths.",
+    "ground_truth": "A privilege escalation vulnerability lets an actor gain capabilities they should not have, such as a user granting themselves an admin role, or a low-privilege address invoking an upgrade. It typically results from weak role checks, missing separation of duties, or logic that lets a caller influence their own authorization. Recommended mitigations include explicit role checks, careful separation of admin and user functions, and thorough testing of the authorization matrix.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-008",
+    "question": "Why is accurate share or token accounting important in a lending protocol?",
+    "topic": "token_accounting",
+    "expected_keywords": ["share", "balance", "accounting", "rounding", "deposit", "withdraw", "valuation"],
+    "relevant_doc_id": "fraxlend-fraxferry",
+    "relevant_doc_hint": "The Fraxlend review covers share/balance accounting precision.",
+    "ground_truth": "Accurate share/token accounting is what lets a lender map deposited collateral and borrowed amounts to claimable shares. Rounding errors, balance drift, or donation-vs-claim mismatches can let a user mint more shares, claim more than deposited, or leave the protocol insolvent. Lending protocols must define a precise share/asset valuation with explicit rounding direction to prevent such attacks.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-009",
+    "question": "What risks are associated with interest accrual and liquidation logic in a lending protocol?",
+    "topic": "liquidation",
+    "expected_keywords": ["interest", "accrual", "liquidation", "collateral", "health", "borrow", "discount"],
+    "relevant_doc_id": "aave-v3",
+    "relevant_doc_hint": "The Aave V3 review covers interest accrual and liquidation mechanics.",
+    "ground_truth": "Interest and liquidation logic in lending controls how debt grows and when a position is liquidated. Risks include incorrectly computed interest that accumulates debt unfairly, liquidation thresholds that are easy to slip below via a price move, and liquidation discounts that allow a liquidator to take collateral at a loss to the protocol. Designers must ensure interest accrual is exact and positions can only be liquidated when actually unhealthy.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-010",
+    "question": "What can go wrong when a contract transfers tokens without validating the recipient or return value?",
+    "topic": "input_validation",
+    "expected_keywords": ["transfer", "return", "value", "receiver", "address", "solidity", "token"],
+    "relevant_doc_id": "0x-protocol",
+    "relevant_doc_hint": "The 0x review covers token transfer and recipient handling.",
+    "ground_truth": "If a contract ignores the boolean return value of ERC20 transfers or does not validate the recipient, tokens can be sent to a zero address or burned without detection when a token returns false instead of reverting. Some tokens do not revert on failure, so ignoring the return value silently loses funds. Using SafeERC20-style wrappers and validating recipient addresses mitigates this.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-011",
+    "question": "Why is sole reliance on a single admin key a security risk in a protocol?",
+    "topic": "admin_key_risk",
+    "expected_keywords": ["admin", "key", "centralization", "compromise", "upgrade", "single", "point"],
+    "relevant_doc_id": "optimism-security",
+    "relevant_doc_hint": "The Optimism review covers admin/sequencer key centralization.",
+    "ground_truth": "Relying on a single admin key creates a single point of failure: if the key is compromised, an attacker can upgrade the contract, pause it, or drain funds. Centralization risk is especially relevant in protocols with upgradeable proxies or a sequencer. Mitigations include multisig or timelock controls, decentralized governance, and thorough monitoring of privileged operations.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-012",
+    "question": "What upgrade-related risks do upgradeable proxy patterns introduce?",
+    "topic": "upgrades",
+    "expected_keywords": ["proxy", "upgrade", "implementation", "storage", "slot", "collision", "initializer"],
+    "relevant_doc_id": "beanstalk-security",
+    "relevant_doc_hint": "The Beanstalk review covers proxy/upgradeable patterns.",
+    "ground_truth": "Upgradeable proxies separate implementation logic from storage, which introduces risks such as storage slot collisions between implementation versions, functions that can be called during initialization (front-running an initializer), and the ability for an upgraded implementation to change behavior or remove funds. Careful storage-layout compatibility, guarded initializers, and timelocked upgrades mitigate these risks.",
+    "expect_answer": true
+  },
+  {
+    "id": "ev-013",
+    "question": "What are the specific reentrancy controls used in the 0x protocol's 2024 zero-knowledge validator upgrade?",
+    "topic": "trap",
+    "expected_keywords": [],
+    "relevant_doc_hint": "Not present in this corpus (no 2024 ZK validator report).",
+    "ground_truth": "This question refers to a report that is not part of the retrieved corpus.",
+    "expect_answer": false
+  },
+  {
+    "id": "ev-014",
+    "question": "Does the corpus discuss gas optimization bypasses in a Solana-based remittance protocol called 'LumenPay'?",
+    "topic": "trap",
+    "expected_keywords": [],
+    "relevant_doc_hint": "LumenPay is not in the corpus; no relevant source exists.",
+    "ground_truth": "This question concerns a protocol and platform (Solana) not represented in the smart-contract audit corpus.",
+    "expect_answer": false
+  }
+]
