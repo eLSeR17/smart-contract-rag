@@ -81,12 +81,21 @@ def build_chunks_from_pages(
 
     This helper stitches the extractor to the chunker: it preserves page numbers
     as provenance so every chunk can be cited back to a specific PDF page.
+
+    The chunk *index* is a **global counter per document** (not per page) so
+    that ``Chunk.id`` (``{doc_id}::chunk-{index:04d}``) is unique across all
+    pages of a multi-page document — which is required by persistent vector
+    stores like ChromaDB that reject duplicate IDs.
     """
     from .chunker import SentenceChunker
 
     chunker = SentenceChunker(chunk_size=chunk_size, overlap=overlap)
     chunks: list[Chunk] = []
+    running_index = 0
     for page_index, page_text in enumerate(pages, start=1):
         source = SourceRef(doc_id=doc_id, page=page_index)
-        chunks.extend(chunker.chunk_text(page_text, source))
+        for chunk in chunker.chunk_text(page_text, source):
+            chunk.index = running_index
+            running_index += 1
+            chunks.append(chunk)
     return chunks
