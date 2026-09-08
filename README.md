@@ -200,6 +200,34 @@ docs — see `LIVE_DEMO.md` (Follow-up section) and `KNOWN_ISSUES.md`.
   validation, metrics, judges, regression verdicts) — all covered in CI with
   fakes.
 
+## Semantic grounding (experimental)
+
+An optional **NLI entailment gate** (`EntailmentGroundedTextCheck` +
+cross-encoder) can replace the lexical anti-hallucination check. It accepts an
+answer when it is *semantically entailed* by the retrieved evidence, not just
+when it shares tokens with it — which lifts the lexical gate's false refusals
+on synthetic/aggregate questions. Measured on the demo corpus in
+[`docs/SEMANTIC_GROUNDING.md`](docs/SEMANTIC_GROUNDING.md) (honest verdict:
+more strict on anchored topics, no aggregate metric gain, but it unlocks new
+capability):
+
+```bash
+# lexical (default): the token-overlap gate refuses aggregate questions
+GROUNDING_MODE=lexical PYTHONPATH=src python -m smart_contract_rag.cli \
+  "What are the more common attack vectors in Web3 smart contracts?"
+# → I DON'T KNOW
+
+# semantic: the NLI entailment gate accepts the grounded synthesis
+GROUNDING_MODE=semantic PYTHONPATH=src python -m smart_contract_rag.cli \
+  "What are the more common attack vectors in Web3 smart contracts?"
+# → 10 attack vectors (reentrancy, integer under/overflows, front running, …),
+#   each grounded in the retrieved audit reports
+```
+
+Caveat: with `GROUNDING_THRESHOLD=0.5` (default) the semantic gate is stricter
+than the lexical one on well-anchored topics (e.g. ev-002 reentrancy moved from
+answered to refused in the A/B run).
+
 ## Roadmap
 
 - ✅ **Eval pipeline (Phase 2, done)**: golden dataset + dual judge
@@ -208,8 +236,13 @@ docs — see `LIVE_DEMO.md` (Follow-up section) and `KNOWN_ISSUES.md`.
   `scripts/run_eval.py` exit codes (PASS/WARN/FAIL).
 - **Live demo**: a small query UI (Hugging Face Spaces / Streamlit).
 - **Larger corpus**: expand the manifest with more published audits + threat models.
-- **Stronger judge**: add a semantic-entailment judge (cross-encoder) alongside
-  the lexical and LLM judges.
+- ✅ **Semantic grounding (implemented, experimental)**: `EntailmentGroundedTextCheck`
+  NLI gate (cross-encoder, default public `typeform/distilbert-base-uncased-mnli`)
+  + `GROUNDING_MODE`/`GROUNDING_THRESHOLD` knobs. A/B-measured against the lexical
+  baseline on the demo corpus — capability gain on synthetic/aggregate questions,
+  but aggregate metrics did not improve on anchored topics (threshold pending
+  calibration). Full write-up:
+  [`docs/SEMANTIC_GROUNDING.md`](docs/SEMANTIC_GROUNDING.md).
 
 ## Limitations
 

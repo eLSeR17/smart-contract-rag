@@ -89,3 +89,10 @@ process stays auditable.
 - **Methodological note**: `hallucination_rate` stays 0.0 in both runs;
   `answer_rate` drops 0.8333 → 0.75 because ev-006 moves from an ungrounded
   answer to a correct refusal.
+- **Follow-up (2026-09-08)**: the lexical-limit itself (aggregate/synthetic
+  questions always refusable regardless of grounding) was investigated with an
+  NLI entailment gate — see [`SEMANTIC_GROUNDING.md`](SEMANTIC_GROUNDING.md).
+  Net result: synthetic questions solved (lexical `I DON'T KNOW` → grounded
+  10-vector answer in semantic mode), but aggregate metrics on anchored topics
+  did not improve (`GROUNDING_THRESHOLD` pending calibration); that experiment
+  is out-of-scope here and tracked in the semantic-grounding write-up.
