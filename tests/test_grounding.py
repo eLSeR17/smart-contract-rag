@@ -219,6 +219,25 @@ class TestEntailmentGroundedTextCheck:
         # by mistake would reject at threshold 0.08.
         assert ratios["entailment_max"] == 0.1
 
+    def test_uppercase_labels_case_insensitive_lookup(self) -> None:
+        # Regression: typeform/distilbert-base-uncased-mnli exposes labels as
+        # ['ENTAILMENT', 'NEUTRAL', 'CONTRADICTION'] (UPPERCASE); the old exact
+        # lookup labels.index("entailment") raised ValueError in live evals.
+        # Scores follow the label order: entailment (idx 0) = 0.9.
+        checker = _entailment_checker(
+            [0.9, 0.05, 0.05],  # ENTAILMENT, NEUTRAL, CONTRADICTION
+            labels=["ENTAILMENT", "NEUTRAL", "CONTRADICTION"],
+        )
+        ok, ratios = checker.check(
+            "The withdraw function must follow checks-effects-interactions.",
+            CORPUS,
+            threshold=0.5,
+        )
+        assert ok is True
+        # Entailment lives at idx 0 (0.9); no ValueError, score read correctly.
+        assert ratios["entailment_max"] == 0.9
+        assert ratios["entailment_mean"] == 0.9
+
 
 class TestGroundingSettingsWiring:
     def test_semantic_mode_settings_parsed(self) -> None:

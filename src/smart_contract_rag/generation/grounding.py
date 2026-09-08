@@ -187,11 +187,16 @@ class EntailmentGroundedTextCheck:
         * More permissive: accepts conclusions implied by the evidence even
           when the vocabulary does not overlap.
         * Non-deterministic-feeling: depends on a neural model.
-        * Requires the model weights to be downloaded once (~90MB) on first
+        * Requires the model weights to be downloaded once (~250MB) on first
           use; kept local, never uploaded.
 
     The model is loaded lazily, so building an instance never downloads
     anything — only the first :meth:`check` call materialises the scorer.
+
+    The entailment label is looked up case-insensitively because some
+    checkpoints (e.g. ``typeform/distilbert-base-uncased-mnli``) expose labels
+    in UPPERCASE (``ENTAILMENT``/``NEUTRAL``/``CONTRADICTION``) instead of
+    lowercase.
     """
 
     def __init__(
@@ -224,13 +229,18 @@ class EntailmentGroundedTextCheck:
             }
 
         labels = self._scorer.labels
-        try:
-            entailment_idx = labels.index("entailment")
-        except ValueError as exc:  # pragma: no cover - model-specific
+        # Case-insensitive lookup: some checkpoints (e.g.
+        # typeform/distilbert-base-uncased-mnli) expose labels in UPPERCASE
+        # (ENTAILMENT/NEUTRAL/CONTRADICTION) instead of lowercase.
+        entailment_idx = next(
+            (i for i, label in enumerate(labels) if label.strip().lower() == "entailment"),
+            None,
+        )
+        if entailment_idx is None:
             raise ValueError(
                 f"Entailment scorer does not expose an 'entailment' label; "
                 f"got {labels}. Cannot compute semantic grounding."
-            ) from exc
+            )
 
         pairs: list[tuple[str, str]] = [
             (r.chunk.text, answer) for r in retrieved
