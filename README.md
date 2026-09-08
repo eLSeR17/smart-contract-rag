@@ -92,7 +92,7 @@ deterministic fakes:
 - `Generator` → real `LLMGenerator` (Ollama) / scripted fake
 - `Reranker`, `GroundedTextCheck`, guardrails — all injectable
 
-This is what makes the **~192 deterministic unit tests** hermetic: they run in
+This is what makes the **~196 deterministic unit tests** hermetic: they run in
 CI with **no Ollama, no ChromaDB server, and no network**.
 
 ## Stack
@@ -102,7 +102,7 @@ CI with **no Ollama, no ChromaDB server, and no network**.
 - **sentence-transformers** `all-MiniLM-L6-v2` (local) — embeddings
 - **ChromaDB** — persistent, in-process vector store
 - **PyMuPDF** — PDF text extraction with page provenance
-- **pytest** — ~192 deterministic tests (unit + eval pipeline) + live-path scripts
+- **pytest** — ~196 deterministic tests (unit + eval pipeline) + live-path scripts
 
 ## Getting Started
 
@@ -173,6 +173,15 @@ The script exits with a semantic code: `0` = PASS, `1` = FAIL (a metric
 breached its threshold), `2` = WARN (approaching a threshold) — so CI can gate
 on it.
 
+### Live demo (2026-09-08)
+
+A full end-to-end run against the real corpus, the local LLM and the persistent
+ChromaDB store is recorded in [`docs/LIVE_DEMO.md`](docs/LIVE_DEMO.md):
+546 chunks indexed from 10 real audit reports, grounded answers with citations
+(e.g. `TOB-BALANCER-001`), correct refusals, and an honest **FAIL** verdict from
+the regression guard. Known measurement issues found by the live run are tracked
+in [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md).
+
 ### Runtime integrity checks
 
 - **Anti-hallucination**: the grounding check (`NaiveGroundedTextCheck`)
@@ -212,6 +221,10 @@ on it.
   reviews; it is a demonstration corpus, not an exhaustive security database.
 - **Educational scope**: the tool aids review but is **not** a substitute for a
   professional smart-contract audit.
+- **Eval retrieval metrics on the live index** are affected by a documented
+  harness mismatch (golden ids vs. indexed doc ids) — see
+  [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md) (KI-01). Faithfulness,
+  relevance, answer-rate and hallucination metrics are unaffected.
 
 ## License
 

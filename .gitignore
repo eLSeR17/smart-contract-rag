@@ -27,6 +27,7 @@ data/chroma/
 # Generated / runtime artifacts
 data/embeddings_cache/
 *.log
+data/demo/
 
 # IDE / OS
 .idea/
