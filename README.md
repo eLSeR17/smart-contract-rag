@@ -180,7 +180,9 @@ ChromaDB store is recorded in [`docs/LIVE_DEMO.md`](docs/LIVE_DEMO.md):
 546 chunks indexed from 10 real audit reports, grounded answers with citations
 (e.g. `TOB-BALANCER-001`), correct refusals, and an honest **FAIL** verdict from
 the regression guard. Known measurement issues found by the live run are tracked
-in [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md).
+in [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md). A follow-up run after fixing
+the measurement issue (commit `f543845`, KI-01 resolved) is recorded in the same
+docs — see `LIVE_DEMO.md` (Follow-up section) and `KNOWN_ISSUES.md`.
 
 ### Runtime integrity checks
 
@@ -221,10 +223,13 @@ in [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md).
   reviews; it is a demonstration corpus, not an exhaustive security database.
 - **Educational scope**: the tool aids review but is **not** a substitute for a
   professional smart-contract audit.
-- **Eval retrieval metrics on the live index** are affected by a documented
-  harness mismatch (golden ids vs. indexed doc ids) — see
-  [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md) (KI-01). Faithfulness,
-  relevance, answer-rate and hallucination metrics are unaffected.
+- **Eval retrieval metrics on the live index** are measured correctly after
+  resolving the golden-id/index-id mismatch (KI-01, fixed in commit `f543845`):
+  context metrics now reflect real retrieval quality — e.g. context_recall moved
+  from 0.083 to 0.5 and citation accuracy from 0.10 to 0.44 — while the verdict
+  stays FAIL because several topics still miss their source document, a
+  documented functional improvement target (see
+  [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md)).
 
 ## License
 

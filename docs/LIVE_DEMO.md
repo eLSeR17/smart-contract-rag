@@ -82,3 +82,38 @@ docker stop scr-rag-demo && docker rm scr-rag-demo
 
 Raw artifacts from this run are local-only (`data/demo/`, gitignored). The
 canonical record is this document.
+
+## Follow-up — KI-01 resolved (2026-09-08)
+
+The first eval above surfaced a document-id mismatch between the golden dataset
+and the index (KI-01, tracked in KNOWN_ISSUES.md): `index_corpus.py` derived
+`doc_id` from PDF filename stems while the golden set references the manifest's
+canonical ids, zeroing the context/citation metrics for 9 of 12 answerable
+cases regardless of retrieval quality. The fix (commit `f543845`) maps each
+manifest `url` basename to its canonical `id` and uses that as the `doc_id`.
+Everything was then re-run end to end: the index was rebuilt (**546 chunks**
+with canonical doc_ids) and the 14-case LLM-as-judge eval was executed again
+(`data/demo/eval_report_20260908_KI01-resolved.md`).
+
+| Metric | Before (KI-01 active) | After (fix `f543845`) |
+|---|---:|---:|
+| faithfulness | 0.58 | 0.6667 |
+| answer_relevance | 0.44 | 0.6444 |
+| citation_accuracy | 0.10 | 0.4444 |
+| context_precision | 0.0208 | 0.1667 |
+| context_recall | 0.0833 | 0.5 |
+| answer_rate | 0.8333 | 0.75 |
+| correct_refusal_rate | 0.8571 | 0.7857 |
+| hallucination_rate | 0.0 | 0.0 |
+
+The structural zeros are gone (context_recall 0.0833 → 0.5, citation_accuracy
+0.10 → 0.4444) and the verdict is still **FAIL** — but it now reflects real
+retrieval quality on this corpus, not a harness bug. Five topics still do not
+retrieve their source document (access_control, oracle_manipulation,
+token_accounting, admin_key_risk, upgrades), which is a documented functional
+improvement target rather than a measurement artefact. Both runs are
+hallucination-free (hallucination_rate 0.0).
+
+The live citation queries were re-verified after the re-index (Balancer v2 →
+`TOB-BALANCER-001`, Aave v3 vulnerability classes) and remain grounded and
+correct.
