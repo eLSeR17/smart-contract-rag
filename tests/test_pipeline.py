@@ -10,7 +10,10 @@ from smart_contract_rag.models import Chunk, RetrievedChunk, SourceRef
 from smart_contract_rag.pipeline import PipelineConfig, RAGPipeline
 from smart_contract_rag.retrieval.reranker import ScoreFusionReranker
 from smart_contract_rag.retrieval.retriever import VectorRetriever
-from smart_contract_rag.generation.grounding import NaiveGroundedTextCheck
+from smart_contract_rag.generation.grounding import (
+    EntailmentGroundedTextCheck,
+    NaiveGroundedTextCheck,
+)
 
 
 _CORPUS = [
@@ -116,3 +119,84 @@ class TestRAGPipelineFlow:
         )
         response = pipeline.answer("What index does Aave v3 use?")
         assert response.grounding is not None and response.grounding.ok is True
+
+
+class _FakeEntailmentScorer:
+    """Scripted entailment scorer (cycles script if more pairs than scripted)."""
+
+    def __init__(self, labels: list[str], scripted: list[list[float]]) -> None:
+        self._labels = list(labels)
+        self._scripted = scripted
+
+    @property
+    def labels(self) -> list[str]:
+        return list(self._labels)
+
+    def score_pairs(self, pairs: list[tuple[str, str]]) -> list[list[float]]:
+        return [
+            list(self._scripted[i % len(self._scripted)])
+            for i in range(len(pairs))
+        ]
+
+
+class TestRAGPipelineSemanticGrounding:
+    """Integration: pipeline with the entailment (semantic) grounded check.
+
+    The rest of the pipeline is the same deterministic fake stack as
+    :class:`TestRAGPipelineFlow`; only the grounded-check seam is swapped.
+    """
+
+    def _build(
+        self,
+        *scripted: list[float],
+        generation: Callable[[str], str],
+    ) -> RAGPipeline:
+        embedder = DeterministicFakeEmbeddingBackend(dimension=16)
+        store = InMemoryVectorStore()
+        store.add_documents(
+            [Chunk(text=t, source=SourceRef(doc_id="d1", page=i)) for i, t in enumerate(_CORPUS)],
+            embedder,
+        )
+        retriever = VectorRetriever(store=store, embedder=embedder, top_k_default=3)
+        rerank = ScoreFusionReranker(alpha=0.5)
+        generator = _CallableGenerator(generation)
+        grounded = EntailmentGroundedTextCheck(
+            _FakeEntailmentScorer(
+                labels=["contradiction", "entailment", "neutral"],
+                scripted=list(scripted),
+            )
+        )
+        return RAGPipeline(
+            retriever=retriever,
+            reranker=rerank,
+            generator=generator,
+            grounded_check=grounded,
+            config=PipelineConfig(
+                top_k=3,
+                context_chunks=3,
+                grounding_threshold=0.5,
+            ),
+        )
+
+    def test_entailing_answer_passes_output_guardrail(self) -> None:
+        pipeline = self._build(
+            [0.1, 0.9, 0.0],  # entails
+            generation=lambda q: "The withdraw function is vulnerable to reentrancy.",
+        )
+        response = pipeline.answer("Is the withdraw function vulnerable?")
+        assert response.refused is False
+        assert response.grounding is not None and response.grounding.ok is True
+        assert response.grounding.grounded_ratios["entailment_max"] == 0.9
+
+    def test_non_entailing_answer_refused_by_output_guardrail(self) -> None:
+        pipeline = self._build(
+            [0.1, 0.2, 0.7],  # neutral dominates -> not entailed
+            generation=lambda q: "The moon is made of green cheese.",
+        )
+        response = pipeline.answer("Tell me about the weather")
+        assert response.refused is True
+        assert (
+            response.answer
+            == "I DON'T KNOW — the response could not be verified against the provided sources."
+        )
+        assert response.grounding is not None and response.grounding.ok is False

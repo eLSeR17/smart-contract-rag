@@ -19,6 +19,10 @@ _DEFAULTS: dict[str, str] = {
     "CHROMA_DIR": "./data/chroma",
     "CORPUS_DIR": "./data/corpus",
     "MANIFEST_FILE": "manifest.json",
+    # Anti-hallucination grounding knobs.
+    "GROUNDING_MODE": "lexical",  # valid: "lexical" | "semantic"
+    "GROUNDING_MODEL": "cross-encoder/nli-MiniLM-L6-v2",
+    "GROUNDING_THRESHOLD": "0.5",
 }
 
 
@@ -34,6 +38,10 @@ class Settings:
     manifest_path: Path
     # Optional verbosity/behaviour knobs.
     top_k: int = field(default=5)
+    # Anti-hallucination grounding knobs.
+    grounding_mode: str = field(default="lexical")
+    grounding_model: str = field(default="cross-encoder/nli-MiniLM-L6-v2")
+    grounding_threshold: float = field(default=0.5)
 
     @classmethod
     def from_env(cls, environ: dict[str, str] | None = None) -> "Settings":
@@ -48,4 +56,7 @@ class Settings:
             corpus_dir=corpus_dir,
             manifest_path=corpus_dir / value("MANIFEST_FILE"),
             top_k=int(env.get("TOP_K", "5")),
+            grounding_mode=value("GROUNDING_MODE"),
+            grounding_model=value("GROUNDING_MODEL"),
+            grounding_threshold=float(value("GROUNDING_THRESHOLD")),
         )

@@ -10,12 +10,42 @@ from __future__ import annotations
 
 from .config import Settings
 from .generation.generator import LLMGenerator
-from .generation.grounding import NaiveGroundedTextCheck
+from .generation.grounding import (
+    CrossEncoderEntailmentScorer,
+    EntailmentGroundedTextCheck,
+    GroundedTextCheck,
+    NaiveGroundedTextCheck,
+)
 from .index.embeddings import CachedEmbeddingBackend, SentenceTransformerBackend
 from .index.store import ChromaVectorStore
 from .pipeline import PipelineConfig, RAGPipeline
 from .retrieval.reranker import ScoreFusionReranker
 from .retrieval.retriever import VectorRetriever
+
+
+def build_grounding_check(settings: Settings) -> GroundedTextCheck:
+    """Build the anti-hallucination grounded-check from :class:`Settings`.
+
+    ``GROUNDING_MODE`` selects the implementation:
+
+        * ``lexical`` (default) — :class:`NaiveGroundedTextCheck`, the
+          deterministic token-overlap checker (CI-safe, no model download).
+        * ``semantic`` (experimental) — :class:`EntailmentGroundedTextCheck`
+          backed by a lazy NLI cross-encoder (downloads ~90MB on first use).
+
+    Any other value raises :class:`ValueError` so a misconfiguration fails
+    fast and loudly rather than silently falling back.
+    """
+    mode = settings.grounding_mode
+    if mode == "semantic":
+        return EntailmentGroundedTextCheck(
+            CrossEncoderEntailmentScorer(settings.grounding_model)
+        )
+    if mode == "lexical":
+        return NaiveGroundedTextCheck()
+    raise ValueError(
+        f"Invalid GROUNDING_MODE={mode!r}. Valid values are 'lexical' or 'semantic'."
+    )
 
 
 def build_pipeline(settings: Settings, *, persist_dir: str) -> RAGPipeline:
@@ -25,11 +55,14 @@ def build_pipeline(settings: Settings, *, persist_dir: str) -> RAGPipeline:
     retriever = VectorRetriever(store=store, embedder=embedder, top_k_default=settings.top_k)
     reranker = ScoreFusionReranker()
     generator = LLMGenerator(base_url=settings.ollama_url, model=settings.ollama_model)
-    grounded = NaiveGroundedTextCheck()
+    grounded = build_grounding_check(settings)
     return RAGPipeline(
         retriever=retriever,
         reranker=reranker,
         generator=generator,
         grounded_check=grounded,
-        config=PipelineConfig(top_k=settings.top_k),
+        config=PipelineConfig(
+            top_k=settings.top_k,
+            grounding_threshold=settings.grounding_threshold,
+        ),
     )
