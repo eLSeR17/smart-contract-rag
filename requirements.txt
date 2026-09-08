@@ -1,0 +1,29 @@
+# SmartContractRAG – core dependencies
+#
+# Pins are conservative (>=,<) so that CI and local runs stay reproducible
+# while still receiving compatible patch updates. All packages are official
+# and widely maintained (see the "why" notes inline).
+#
+# Data validation / typing foundation
+pydantic>=2.5,<3.0
+
+# HTTP client for the local Ollama endpoint (thread-safe, connection-pooled)
+httpx>=0.24,<1.0
+
+# HTTP client used by the corpus fetcher (official psf/requests)
+requests>=2.28,<3.0
+
+# Vector math
+numpy>=1.24,<2.0
+
+# Persistent, embeddable vector store (no external server; runs in-process)
+chromadb>=0.4.22,<1.0
+
+# Embeddings (all-MiniLM-L6-v2). Pulled from Hugging Face hub at first use.
+sentence-transformers>=2.2,<4.0
+
+# PDF text extraction (PyMuPDF provides the `fitz` bindings)
+PyMuPDF>=1.23,<2.0
+
+# Testing
+pytest>=7.0,<9.0

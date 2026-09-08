@@ -1,0 +1,2 @@
+# This directory holds downloaded audit PDFs (gitignored except this file).
+# Run `python scripts/fetch_corpus.py` to populate it from data/corpus/manifest.json.

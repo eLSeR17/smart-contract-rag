@@ -1,0 +1,91 @@
+{
+  "description": "Public smart-contract audit reports (Trail of Bits publications) used as the RAG corpus. PDFs are NOT committed to git; they are downloaded to data/corpus/raw/ by scripts/fetch_corpus.py. This manifest is the source of truth for what should be downloaded and how it is cited.",
+  "source": {
+    "repo": "https://github.com/trailofbits/publications",
+    "branch": "master",
+    "subdir": "reviews"
+  },
+  "base_url": "https://raw.githubusercontent.com/trailofbits/publications/master/reviews",
+  "documents": [
+    {
+      "id": "0x-protocol",
+      "title": "0x Protocol Security Assessment",
+      "project": "0x Protocol",
+      "year": 2019,
+      "file": "0x-protocol.pdf",
+      "url": "https://raw.githubusercontent.com/trailofbits/publications/master/reviews/0x-protocol.pdf"
+    },
+    {
+      "id": "balancerv2",
+      "title": "Balancer V2 Security Review",
+      "project": "Balancer",
+      "year": 2021,
+      "file": "2021-04-balancer-balancerv2-securityreview.pdf",
+      "url": "https://raw.githubusercontent.com/trailofbits/publications/master/reviews/2021-04-balancer-balancerv2-securityreview.pdf"
+    },
+    {
+      "id": "aave-v3",
+      "title": "Aave V3 Security Review",
+      "project": "Aave",
+      "year": 2021,
+      "file": "2021-11-aave-v3-securityreview.pdf",
+      "url": "https://raw.githubusercontent.com/trailofbits/publications/master/reviews/2021-11-aave-v3-securityreview.pdf"
+    },
+    {
+      "id": "maplefinance-v1",
+      "title": "Maple Finance Security Review",
+      "project": "Maple Finance",
+      "year": 2022,
+      "file": "2022-03-maplefinance-securityreview.pdf",
+      "url": "https://raw.githubusercontent.com/trailofbits/publications/master/reviews/2022-03-maplefinance-securityreview.pdf"
+    },
+    {
+      "id": "beanstalk-security",
+      "title": "Beanstalk Security Review",
+      "project": "Beanstalk",
+      "year": 2022,
+      "file": "2022-07-beanstalk-securityreview.pdf",
+      "url": "https://raw.githubusercontent.com/trailofbits/publications/master/reviews/2022-07-beanstalk-securityreview.pdf"
+    },
+    {
+      "id": "reserve-security",
+      "title": "Reserve Protocol Security Review",
+      "project": "Reserve",
+      "year": 2022,
+      "file": "2022-08-reserve-protocol-securityreview.pdf",
+      "url": "https://raw.githubusercontent.com/trailofbits/publications/master/reviews/2022-08-reserve-protocol-securityreview.pdf"
+    },
+    {
+      "id": "increment-security",
+      "title": "Increment Protocol Security Review",
+      "project": "Increment Protocol",
+      "year": 2022,
+      "file": "2022-09-incrementprotocol-securityreview.pdf",
+      "url": "https://raw.githubusercontent.com/trailofbits/publications/master/reviews/2022-09-incrementprotocol-securityreview.pdf"
+    },
+    {
+      "id": "balancer-managedpool",
+      "title": "Balancer Managed Pool Smart Contracts Security Review",
+      "project": "Balancer",
+      "year": 2022,
+      "file": "2022-10-balancerlabs-managedpoolsmartcontracts-securityreview.pdf",
+      "url": "https://raw.githubusercontent.com/trailofbits/publications/master/reviews/2022-10-balancerlabs-managedpoolsmartcontracts-securityreview.pdf"
+    },
+    {
+      "id": "fraxlend-fraxferry",
+      "title": "Frax Finance Fraxlend/FraxFerry Security Review",
+      "project": "Frax Finance",
+      "year": 2022,
+      "file": "2022-10-fraxfinance-fraxlend-fraxferry-securityreview.pdf",
+      "url": "https://raw.githubusercontent.com/trailofbits/publications/master/reviews/2022-10-fraxfinance-fraxlend-fraxferry-securityreview.pdf"
+    },
+    {
+      "id": "optimism-security",
+      "title": "Optimism Security Review",
+      "project": "Optimism",
+      "year": 2022,
+      "file": "2022-11-optimism-securityreview.pdf",
+      "url": "https://raw.githubusercontent.com/trailofbits/publications/master/reviews/2022-11-optimism-securityreview.pdf"
+    }
+  ]
+}

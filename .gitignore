@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Environments / secrets (NEVER commit)
+.env
+.env.local
+.env.*.local
+
+# Downloaded corpus (binary PDFs are large; the manifest is the committed source)
+data/corpus/raw/*
+!data/corpus/raw/.gitkeep
+data/corpus/*.part
+
+# Persistent vector stores
+data/chroma/
+*.chroma/
+
+# Generated / runtime artifacts
+data/embeddings_cache/
+*.log
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
