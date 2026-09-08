@@ -237,7 +237,7 @@ class TestGroundingSettingsWiring:
     def test_lexical_defaults(self) -> None:
         settings = Settings.from_env(environ={})
         assert settings.grounding_mode == "lexical"
-        assert settings.grounding_model == "cross-encoder/nli-MiniLM-L6-v2"
+        assert settings.grounding_model == "typeform/distilbert-base-uncased-mnli"
         assert settings.grounding_threshold == 0.5
 
 

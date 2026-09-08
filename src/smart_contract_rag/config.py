@@ -21,7 +21,7 @@ _DEFAULTS: dict[str, str] = {
     "MANIFEST_FILE": "manifest.json",
     # Anti-hallucination grounding knobs.
     "GROUNDING_MODE": "lexical",  # valid: "lexical" | "semantic"
-    "GROUNDING_MODEL": "cross-encoder/nli-MiniLM-L6-v2",
+    "GROUNDING_MODEL": "typeform/distilbert-base-uncased-mnli",
     "GROUNDING_THRESHOLD": "0.5",
 }
 
@@ -40,7 +40,7 @@ class Settings:
     top_k: int = field(default=5)
     # Anti-hallucination grounding knobs.
     grounding_mode: str = field(default="lexical")
-    grounding_model: str = field(default="cross-encoder/nli-MiniLM-L6-v2")
+    grounding_model: str = field(default="typeform/distilbert-base-uncased-mnli")
     grounding_threshold: float = field(default=0.5)
 
     @classmethod

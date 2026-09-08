@@ -125,13 +125,14 @@ class CrossEncoderEntailmentScorer:
     """NLI cross-encoder scorer backed by ``sentence_transformers.CrossEncoder``.
 
     Uses a local *natural-language-inference* cross-encoder (default
-    ``cross-encoder/nli-MiniLM-L6-v2``) to score whether a hypothesis is
+    ``typeform/distilbert-base-uncased-mnli``, a public distilbert MNLI
+    cross-encoder; gated alternatives exist) to score whether a hypothesis is
     entailed by a premise. The model weights are downloaded from the Hugging
-    Face Hub the first time the scorer is actually used (~90MB, local download),
+    Face Hub the first time the scorer is actually used (~250MB, local download),
     not when the object is constructed.
     """
 
-    def __init__(self, model_name: str = "cross-encoder/nli-MiniLM-L6-v2") -> None:
+    def __init__(self, model_name: str = "typeform/distilbert-base-uncased-mnli") -> None:
         self.model_name = model_name
         # The model is loaded lazily on first use so that constructing a scorer
         # (and wiring it into tests/builders) never triggers a download or
@@ -174,7 +175,8 @@ class EntailmentGroundedTextCheck:
     entailment label score: the premise is the retrieved chunk and the
     hypothesis is the answer, i.e. we ask whether the evidence entails the
     answer (``(premise, hypothesis)`` is the convention of
-    ``cross-encoder/nli-MiniLM-L6-v2``).
+    the NLI cross-encoder; the default is the public distilbert MNLI model —
+    gated alternatives exist).
 
     The answer is grounded when the *best* entailment score across sources
     meets the threshold. Being best-source (max) rather than average keeps a
