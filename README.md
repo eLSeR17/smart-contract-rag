@@ -8,6 +8,15 @@
 > layer** — built entirely on **local models** (Ollama + sentence-transformers),
 > with a deterministic test suite that runs **without network or a GPU**.
 
+## Demo
+
+A grounded live answer over the real corpus (546 chunks, local LLM): the model
+cannot answer without retrieved evidence — hallucination is refused by design.
+
+![grounded answer](docs/media/demo-grounded-answer.svg)
+
+Full live-run evidence (environment, corpus, index, eval table): `docs/LIVE_DEMO.md`.
+
 ## Problem
 
 Language models confidently answer questions even when they lack the facts. For
