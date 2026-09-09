@@ -267,3 +267,11 @@ answered to refused in the A/B run).
 ## License
 
 MIT — see [LICENSE](LICENSE). Free to use, modify and distribute with attribution.
+
+## Related portfolio projects
+
+`smart-contract-rag` is externally cross-validated by
+[`evalforge`](https://github.com/eLSeR17/evalforge), a sibling portfolio project
+that reproduces the retrieval gaps of this project's own harness from the
+outside (black-box, docker-exec). See the
+[live eval reports](https://github.com/eLSeR17/evalforge/blob/main/docs/LIVE_EVAL.md).
