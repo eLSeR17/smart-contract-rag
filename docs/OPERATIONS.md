@@ -55,7 +55,7 @@ parseable by Loki/ELK without custom parsing. Correlate with
 | Symptom                       | Likely cause                    | Action                                       |
 |-------------------------------|---------------------------------|----------------------------------------------|
 | `/query` → 503                | Ollama unreachable / index missing | check `docker ps` for Ollama; `SCRAG_*` dirs mounted |
-| First query slow / timeout    | Model download or cold load     | wait; raise `WORKER_TIMEOUT` if hitting limits |
+| First query slow / timeout    | Model download or cold load     | wait; raise the query timeout if hitting limits |
 | 401 despite correct key       | wrong `SCRAG_AUTH_DB` file      | verify volume path contains `auth.sqlite3`   |
 | 429 burst                     | per-key budget too low          | raise `SCRAG_RATE_LIMIT` or recreate key with higher limit |
 | `database is locked` in logs  | multi-process SQLite write race | single writer process is expected; if >2 workers, reduce to 1 for the auth DB |

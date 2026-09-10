@@ -21,7 +21,7 @@ import uuid
 from typing import Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from .auth import APIKeyStore
@@ -268,10 +268,13 @@ def check_rate_limit(key_id: str | None) -> None:
         store = get_auth()
         if store is not None:
             per_minute = store.rate_limit_for(key_id)
-    allowed, remaining = limiter.check(subject, per_minute=per_minute)
+    allowed, _remaining = limiter.check(subject, per_minute=per_minute)
     if not allowed:
+        # Count by decision, not by post-check balance: a granted request with an
+        # empty bucket is an OK, not an exhaustion (keeps alerting semantics sane).
+        get_metrics().inc("rate_limit_exhausted_total")
         raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Rate limit exceeded")
-    get_metrics().inc("rate_limit_exhausted_total" if remaining <= 0 else "rate_limit_ok_total")
+    get_metrics().inc("rate_limit_ok_total")
 
 
 @app.post("/query", response_model=QueryResponse)
@@ -312,4 +315,4 @@ def health() -> HealthResponse:
 @app.get("/metrics")
 def metrics() -> str:
     """Prometheus text exposition format."""
-    return JSONResponse(content=get_metrics().render())
+    return Response(content=get_metrics().render(), media_type="text/plain")
