@@ -130,6 +130,14 @@ pip install pytest numpy httpx
 pytest tests/ -v
 ```
 
+### Pre-push validation (recommended)
+Local gates mirror the CI (ruff, executable-bit/shebang checks, pytest,
+pip-audit) and block the push on any failure:
+
+```bash
+git config core.hooksPath scripts/hooks
+```
+
 ### (Optional) Build the live corpus + index
 ```bash
 # 1. Fetch the public audit PDFs (from data/corpus/manifest.json)
