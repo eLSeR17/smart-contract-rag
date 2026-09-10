@@ -132,9 +132,11 @@ class EvalReport:
             "# Evaluation Report",
             "",
             f"- **Verdict**: `{self.status.value}`",
-            f"- **Cases**: {len(self.cases)} (answered "
-            f"{sum(1 for c in self.cases if c.answered)}, refused "
-            f"{sum(1 for c in self.cases if c.refused)})",
+            (
+                f"- **Cases**: {len(self.cases)} (answered "
+                f"{sum(1 for c in self.cases if c.answered)}, refused "
+                f"{sum(1 for c in self.cases if c.refused)})"
+            ),
             "",
             "## Metrics",
             "",

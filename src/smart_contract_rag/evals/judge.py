@@ -45,7 +45,7 @@ class Judge(Protocol):
         answer: str,
         expected: str | None,
         retrieved: list[RetrievedChunk],
-    ) -> "JudgeScore":
+    ) -> JudgeScore:
         ...
 
 
@@ -194,7 +194,7 @@ class OllamaJudge:
             response.raise_for_status()
             data = response.json()
             content = (data.get("message") or {}).get("content", "")
-        except Exception as exc:  # network / parse / HTTP errors -> graceful fallback
+        except Exception as exc:  # noqa: BLE001 — network / parse / HTTP -> graceful fallback
             return JudgeScore(
                 faithfulness=0.0,
                 relevance=0.0,

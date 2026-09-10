@@ -1,0 +1,26 @@
+# SmartContractRAG API — production image
+# Build:  docker build -f Dockerfile.api -t smart-contract-rag-api .
+# Model/corpus artifacts (data/chroma, data/corpus) mount at /app/data.
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    CHROMA_DIR=/app/data/chroma \
+    CORPUS_DIR=/app/data/corpus
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY src ./src
+COPY scripts ./scripts
+
+EXPOSE 8000
+
+# Two workers: the pipeline is I/O-bound (HTTP calls to Ollama/embeddings),
+# so threads scale better than processes. HEALTHCHECK probes /health.
+CMD ["uvicorn", "smart_contract_rag.api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4)"

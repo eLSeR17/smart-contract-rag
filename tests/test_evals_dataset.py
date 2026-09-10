@@ -9,7 +9,6 @@ import pytest
 
 from smart_contract_rag.evals.dataset import GoldenDataset, ValidationIssue
 
-
 VALID_CASES = [
     {
         "id": "ev-001",
@@ -51,7 +50,7 @@ class TestFromJson:
     def test_non_list_root_raises(self, tmp_path: Path) -> None:
         path = tmp_path / "obj.json"
         path.write_text(json.dumps({"documents": []}), encoding="utf-8")
-        with pytest.raises(ValueError, match="must be a list"):
+        with pytest.raises(TypeError, match="must be a list"):
             GoldenDataset.from_json(path)
 
 

@@ -1,0 +1,40 @@
+# Production-style deployment of the SmartContractRAG API.
+#
+#   OLLAMA_URL must reach Ollama over the docker network. If you run this in
+#   the same docker_default network as Ollama, the default value works.
+#
+#   docker compose -f docker-compose.prod.yml up -d --build
+services:
+  scrag-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: smart-contract-rag-api
+    ports:
+      - "8000:8000"
+    environment:
+      OLLAMA_URL: "${OLLAMA_URL:-http://ollama:11434}"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-qwen2.5-coder:7b}"
+      EMBEDDING_MODEL: "${EMBEDDING_MODEL:-all-MiniLM-L6-v2}"
+      GROUNDING_MODE: "${GROUNDING_MODE:-lexical}"
+      GROUNDING_THRESHOLD: "${GROUNDING_THRESHOLD:-0.5}"
+      CHROMA_DIR: /app/data/chroma
+      CORPUS_DIR: /app/data/corpus
+      SCRAG_AUTH: "${SCRAG_AUTH:-api_key}"
+      SCRAG_AUTH_DB: /app/data/auth.sqlite3
+      SCRAG_RATE_LIMIT: "${SCRAG_RATE_LIMIT:-60}"
+    volumes:
+      # Dedicated named volumes: restarts never wipe the index/corpus/keys.
+      - scrag-data:/app/data
+    restart: unless-stopped
+    networks:
+      - default
+      - docker_default
+
+volumes:
+  scrag-data:
+
+networks:
+  docker_default:
+    name: docker_default
+    external: true

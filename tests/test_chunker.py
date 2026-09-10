@@ -4,7 +4,12 @@ from __future__ import annotations
 
 import pytest
 
-from smart_contract_rag.ingest.chunker import RecordChunker, SentenceChunker, split_sentences, approx_tokens
+from smart_contract_rag.ingest.chunker import (
+    RecordChunker,
+    SentenceChunker,
+    approx_tokens,
+    split_sentences,
+)
 from smart_contract_rag.models import SourceRef
 
 SRC = SourceRef(doc_id="aave-v3", page=1)

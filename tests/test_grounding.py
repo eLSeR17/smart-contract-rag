@@ -70,7 +70,7 @@ class TestNaiveGroundedTextCheck:
         checker = NaiveGroundedTextCheck()
         answer = "The withdraw function is vulnerable to reentrancy and exploits are likely."
         # Full grounding yields high ratio; a strict threshold passes.
-        ok_strict, ratios = checker.check(answer, CORPUS, threshold=0.5)
+        ok_strict, _ = checker.check(answer, CORPUS, threshold=0.5)
         assert ok_strict is True
         # An impossible threshold should reject even a grounded answer.
         ok_impossible, _ = checker.check(answer, CORPUS, threshold=0.99)

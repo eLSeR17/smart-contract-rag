@@ -111,7 +111,8 @@ CI with **no Ollama, no ChromaDB server, and no network**.
 - **sentence-transformers** `all-MiniLM-L6-v2` (local) — embeddings
 - **ChromaDB** — persistent, in-process vector store
 - **PyMuPDF** — PDF text extraction with page provenance
-- **pytest** — ~196 deterministic tests (unit + eval pipeline) + live-path scripts
+- **FastAPI + Uvicorn** — REST API with API-key auth, per-key rate limiting, JSON logs, Prometheus metrics
+- **pytest** — 212 deterministic tests (unit + eval pipeline + API) + live-path scripts
 
 ## Getting Started
 
@@ -143,6 +144,51 @@ python scripts/index_corpus.py
 PYTHONPATH=src python -m smart_contract_rag.cli \
   "Does the Aave V3 review mention reentrancy?"
 ```
+
+## HTTP API server
+
+The grounded pipeline is also exposed as a REST API
+(`src/smart_contract_rag/api.py`) with production ergonomics: API-key auth
+(SHA-256-hashed keys, created via `scripts/create_api_key.py`), per-key
+token-bucket rate limiting, JSON structured request logs, `X-Request-ID`
+correlation and Prometheus `GET /metrics`.
+
+```bash
+uvicorn smart_contract_rag.api:app --port 8000
+curl -s http://localhost:8000/query -H 'Content-Type: application/json' \
+  -d '{"query": "Does the Aave V3 review mention reentrancy?"}'
+```
+
+```json
+{
+  "answer": "Yes — the Aave V3 review lists reentrancy among the primary risks...",
+  "refused": false,
+  "grounding": { "ok": true, "reason": "grounded" },
+  "sources": [ { "doc_id": "2021-11-aave-v3-securityreview", "page": 4 } ]
+}
+```
+
+Without `SCRAG_AUTH=api_key` the endpoint is open (local dev); authentication
+is **on by default in the production compose** (`docker-compose.prod.yml`,
+`SCRAG_AUTH=api_key`). Full contract, error codes and runbook:
+[`docs/API.md`](docs/API.md) · [`docs/OPERATIONS.md`](docs/OPERATIONS.md).
+
+### Production readiness
+
+Honest self-assessment against production standards (what is in place vs what
+a large deployment would still want):
+
+| Area | Status |
+|------|--------|
+| API security (key auth, rate limiting, 401/429) | ✅ built & tested |
+| Observability (JSON logs, metrics, request ids) | ✅ built & tested |
+| Persistent state (SQLite WAL + named volumes) | ✅ built |
+| Containerised deployment + healthcheck | ✅ `Dockerfile.api` + `docker-compose.prod.yml` |
+| Dependency + secret scanning in CI (pip-audit, gitleaks) | ✅ |
+| Load/soak test with measured budget | ⏳ planned (`docs/LOAD_TEST.md` pattern from alpha-agent) |
+| Read replica / horizontal scale-out | ⏳ ChromaDB is in-process; scale = multiple nodes + external vector DB |
+| Observability export (OTel) | ⏳ Prometheus format ready; OTel collector not wired |
+| AuthSSO / fine-grained roles | ⏳ out of scope for a local portfolio service |
 
 ## Evaluation & Integrity
 
@@ -243,7 +289,8 @@ answered to refused in the A/B run).
   (deterministic heuristic + LLM-as-judge) for faithfulness/relevance/
   citation/context scoring and hallucination-rate regression, wired into CI via
   `scripts/run_eval.py` exit codes (PASS/WARN/FAIL).
-- **Live demo**: a small query UI (Hugging Face Spaces / Streamlit).
+- ✅ **REST API server (this round)**: auth, rate limit, metrics, docs (`docs/API.md`).
+- **Live demo UI**: a small query UI (Hugging Face Spaces / Streamlit) on top of the API.
 - **Larger corpus**: expand the manifest with more published audits + threat models.
 - ✅ **Semantic grounding (implemented, experimental)**: `EntailmentGroundedTextCheck`
   NLI gate (cross-encoder, default public `typeform/distilbert-base-uncased-mnli`)

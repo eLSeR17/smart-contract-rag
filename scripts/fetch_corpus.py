@@ -26,7 +26,7 @@ from pathlib import Path
 # Allow running as a standalone script before the package is importable.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from smart_contract_rag.ingest.fetcher import CorpusFetcher  # noqa: E402
+from smart_contract_rag.ingest.fetcher import CorpusFetcher
 
 
 def main() -> int:
@@ -56,7 +56,7 @@ def main() -> int:
         papers = fetcher.load_manifest()
         print(f"Manifest: {len(papers)} audit PDF(s).")
         results = fetcher.fetch_all(force=args.force)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 — CLI tool; report and exit
         print(f"Failed: {exc}", file=sys.stderr)
         return 1
 

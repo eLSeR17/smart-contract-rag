@@ -16,7 +16,7 @@ from ..models import Chunk, SourceRef
 
 try:  # PyMuPDF is heavy; make it an optional import for lightweight test runs.
     import fitz  # type: ignore
-except Exception:  # pragma: no cover - import guarded for environments w/o PyMuPDF
+except Exception:  # noqa: BLE001 — pragma: no cover - import guarded for environments w/o PyMuPDF
     fitz = None  # type: ignore
 
 

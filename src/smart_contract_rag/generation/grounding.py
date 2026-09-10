@@ -26,7 +26,10 @@ from __future__ import annotations
 
 import re
 from statistics import mean
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
+
+if TYPE_CHECKING:
+    from ..models import RetrievedChunk
 
 _STOPWORDS: frozenset[str] = frozenset(
     {

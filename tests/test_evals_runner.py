@@ -12,9 +12,7 @@ from smart_contract_rag.evals.runner import (
     run_eval,
 )
 from smart_contract_rag.models import RetrievedChunk
-
 from tests.evals_fixtures import ScriptedPipeline
-
 
 # ---------------------------------------------------------------------------
 # Golden datasets (valid by schema)

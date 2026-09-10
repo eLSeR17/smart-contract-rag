@@ -2,19 +2,18 @@
 
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
 
-from smart_contract_rag.index.embeddings import DeterministicFakeEmbeddingBackend
-from smart_contract_rag.index.store import InMemoryVectorStore
-from smart_contract_rag.models import Chunk, RetrievedChunk, SourceRef
-from smart_contract_rag.pipeline import PipelineConfig, RAGPipeline
-from smart_contract_rag.retrieval.reranker import ScoreFusionReranker
-from smart_contract_rag.retrieval.retriever import VectorRetriever
 from smart_contract_rag.generation.grounding import (
     EntailmentGroundedTextCheck,
     NaiveGroundedTextCheck,
 )
-
+from smart_contract_rag.index.embeddings import DeterministicFakeEmbeddingBackend
+from smart_contract_rag.index.store import InMemoryVectorStore
+from smart_contract_rag.models import Chunk, SourceRef
+from smart_contract_rag.pipeline import PipelineConfig, RAGPipeline
+from smart_contract_rag.retrieval.reranker import ScoreFusionReranker
+from smart_contract_rag.retrieval.retriever import VectorRetriever
 
 _CORPUS = [
     "The withdraw function is vulnerable to reentrancy.",

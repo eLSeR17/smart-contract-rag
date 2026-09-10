@@ -28,13 +28,16 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from smart_contract_rag.config import Settings  # noqa: E402
-from smart_contract_rag.index.embeddings import (  # noqa: E402
+from smart_contract_rag.config import Settings
+from smart_contract_rag.index.embeddings import (
     CachedEmbeddingBackend,
     SentenceTransformerBackend,
 )
-from smart_contract_rag.index.store import ChromaVectorStore  # noqa: E402
-from smart_contract_rag.ingest.extractor import PDFTextExtractor, build_chunks_from_pages  # noqa: E402
+from smart_contract_rag.index.store import ChromaVectorStore
+from smart_contract_rag.ingest.extractor import (
+    PDFTextExtractor,
+    build_chunks_from_pages,
+)
 
 
 def main() -> int:

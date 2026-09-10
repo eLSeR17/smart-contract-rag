@@ -10,8 +10,6 @@ from smart_contract_rag.evals.judge import (
     OllamaJudge,
     parse_judge_score,
 )
-from smart_contract_rag.models import Chunk, RetrievedChunk, SourceRef
-
 from tests.evals_fixtures import make_retrieved
 
 

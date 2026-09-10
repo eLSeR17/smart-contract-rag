@@ -6,7 +6,10 @@ normalisation logic and the page-chunker stitching via plain text fixtures.
 
 from __future__ import annotations
 
-from smart_contract_rag.ingest.extractor import PDFTextExtractor, build_chunks_from_pages
+from smart_contract_rag.ingest.extractor import (
+    PDFTextExtractor,
+    build_chunks_from_pages,
+)
 
 
 class TestNormalisation:

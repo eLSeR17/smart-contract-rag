@@ -44,9 +44,9 @@ class Settings:
     grounding_threshold: float = field(default=0.5)
 
     @classmethod
-    def from_env(cls, environ: dict[str, str] | None = None) -> "Settings":
+    def from_env(cls, environ: dict[str, str] | None = None) -> Settings:
         env = environ if environ is not None else os.environ
-        value = lambda key: env.get(key, _DEFAULTS[key])  # noqa: E731
+        value = lambda key: env.get(key, _DEFAULTS[key])
         corpus_dir = Path(value("CORPUS_DIR"))
         return cls(
             ollama_url=value("OLLAMA_URL"),

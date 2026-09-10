@@ -24,9 +24,10 @@ CI, and supports slicing into sub-sets (by topic, by id, or by any predicate).
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, TypedDict
+from typing import TypedDict
 
 # The valid choice set is intentionally explicit so typos in the dataset are
 # caught at load time rather than silently skewing an eval run.
@@ -103,7 +104,7 @@ class GoldenDataset:
 
     # ------------------------------------------------------------------
     @classmethod
-    def from_json(cls, path: str | Path, *, validate: bool = True) -> "GoldenDataset":
+    def from_json(cls, path: str | Path, *, validate: bool = True) -> GoldenDataset:
         """Load and (by default) validate a golden set from a JSON file."""
         p = Path(path)
         if not p.exists():
@@ -114,7 +115,7 @@ class GoldenDataset:
             except json.JSONDecodeError as exc:
                 raise ValueError(f"Invalid JSON in golden dataset {p}: {exc}") from exc
         if not isinstance(raw, list):
-            raise ValueError("Golden dataset JSON must be a list of case objects.")
+            raise TypeError("Golden dataset JSON must be a list of case objects.")
         dataset = cls(cases=[GoldenCase(**case) for case in raw])
         if validate:
             report = dataset.validate()
@@ -123,7 +124,7 @@ class GoldenDataset:
         return dataset
 
     @classmethod
-    def from_cases(cls, cases: list[dict]) -> "GoldenDataset":
+    def from_cases(cls, cases: list[dict]) -> GoldenDataset:
         """Build a dataset from a list of plain dicts (handy for tests)."""
         return cls(cases=[GoldenCase(**case) for case in cases])
 
@@ -164,8 +165,9 @@ class GoldenDataset:
                 issues.append(ValidationIssue(case_id, "expect_answer", "must be a boolean"))
 
             rel = case.get("relevant_doc_id")
-            if rel is not None:
-                if not (isinstance(rel, str) or (isinstance(rel, list) and all(isinstance(x, str) for x in rel))):
+            if rel is not None and not (
+                isinstance(rel, str) or (isinstance(rel, list) and all(isinstance(x, str) for x in rel))
+            ):
                     issues.append(ValidationIssue(case_id, "relevant_doc_id", "must be a str or list[str]"))
 
             gt = case.get("ground_truth")
@@ -177,14 +179,14 @@ class GoldenDataset:
     # ------------------------------------------------------------------
     # Subsetting
     # ------------------------------------------------------------------
-    def subset_by_topic(self, topic: str) -> "GoldenDataset":
+    def subset_by_topic(self, topic: str) -> GoldenDataset:
         return GoldenDataset(cases=[c for c in self.cases if c.get("topic") == topic])
 
-    def subset_by_ids(self, ids: set[str] | list[str]) -> "GoldenDataset":
+    def subset_by_ids(self, ids: set[str] | list[str]) -> GoldenDataset:
         id_set = set(ids)
         return GoldenDataset(cases=[c for c in self.cases if c.get("id") in id_set])
 
-    def subset_by_predicate(self, predicate: Callable[[GoldenCase], bool]) -> "GoldenDataset":
+    def subset_by_predicate(self, predicate: Callable[[GoldenCase], bool]) -> GoldenDataset:
         return GoldenDataset(cases=[c for c in self.cases if predicate(c)])
 
     # ------------------------------------------------------------------

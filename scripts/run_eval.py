@@ -28,11 +28,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from smart_contract_rag.config import Settings  # noqa: E402
-from smart_contract_rag.evals.dataset import GoldenDataset  # noqa: E402
-from smart_contract_rag.evals.judge import HeuristicJudge, OllamaJudge  # noqa: E402
-from smart_contract_rag.evals.runner import RegressionStatus, run_eval  # noqa: E402
-from smart_contract_rag.builders import build_pipeline  # noqa: E402
+from smart_contract_rag.builders import build_pipeline
+from smart_contract_rag.config import Settings
+from smart_contract_rag.evals.dataset import GoldenDataset
+from smart_contract_rag.evals.judge import HeuristicJudge, OllamaJudge
+from smart_contract_rag.evals.runner import RegressionStatus, run_eval
 
 
 def _select_judge(settings: Settings) -> HeuristicJudge | OllamaJudge:

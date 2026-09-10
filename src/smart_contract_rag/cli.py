@@ -42,7 +42,7 @@ def main(argv: list[str] | None = None) -> int:
                 where = f"page {source.page}" if source.page else "n/a"
                 print(f"  - {source.doc_id} ({where})")
         return 0 if not response.refused else 2
-    except Exception as exc:  # pragma: no cover - CLI error path
+    except Exception as exc:  # noqa: BLE001 — pragma: no cover - CLI error path
         print(f"error: {exc}", file=sys.stderr)
         return 2
 

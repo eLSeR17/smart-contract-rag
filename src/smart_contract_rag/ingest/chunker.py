@@ -25,7 +25,6 @@ from typing import Protocol
 
 from ..models import Chunk, SourceRef
 
-
 # Common English abbreviations whose trailing period is NOT a sentence
 # boundary. Splitting on these would break "Fig. 3", "e.g.", "Dr. Smith",
 # "No.", "Sec.", "Etc." into spurious sentence fragments.

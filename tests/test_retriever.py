@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from smart_contract_rag.index.embeddings import DeterministicFakeEmbeddingBackend
 from smart_contract_rag.index.store import InMemoryVectorStore
 from smart_contract_rag.models import Chunk, SourceRef

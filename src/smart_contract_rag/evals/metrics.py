@@ -29,10 +29,10 @@ so the metrics are dependency-free and deterministic.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
-from typing import Iterable, Sequence
 
-from ..models import RetrievedChunk, RAGResponse
+from ..models import RAGResponse, RetrievedChunk
 
 # Stopwords are ignored for faithfulness because they are shared by every
 # sentence and would inflate the ratio without adding evidence signal.

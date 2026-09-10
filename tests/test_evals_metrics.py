@@ -17,7 +17,6 @@ from smart_contract_rag.evals.metrics import (
     is_refusal,
 )
 from smart_contract_rag.models import RAGResponse, SourceRef
-
 from tests.evals_fixtures import make_response, make_retrieved
 
 

@@ -15,9 +15,7 @@ from smart_contract_rag.evals.runner import (
     RegressionThresholds,
     run_eval,
 )
-
 from tests.evals_fixtures import ScriptedPipeline
-
 
 BASELINE_CASES = [
     {
@@ -51,8 +49,10 @@ HEALTHY_SCRIPT = {
         "answer": "The withdraw function is vulnerable to reentrancy via checks-effects-interactions.",
         "doc_ids": ["aave-v3"],
         "grounded_chunks": [
-            "The withdraw function is vulnerable to reentrancy and uses "
-            "checks-effects-interactions."
+            (
+                "The withdraw function is vulnerable to reentrancy and uses "
+                "checks-effects-interactions."
+            )
         ],
     },
     "oracle": {
@@ -113,8 +113,10 @@ class TestDegradations:
             "answer": "The withdraw function is vulnerable to reentrancy via checks-effects-interactions.",
             "doc_ids": ["optimism-security"],
             "grounded_chunks": [
-                "The withdraw function is vulnerable to reentrancy and uses "
-                "checks-effects-interactions."
+                (
+                    "The withdraw function is vulnerable to reentrancy and uses "
+                    "checks-effects-interactions."
+                )
             ],
         }
         report = run_eval(ScriptedPipeline(script), _dataset())
@@ -130,8 +132,10 @@ class TestDegradations:
             "answer": "The withdraw function is vulnerable to reentrancy via checks-effects-interactions.",
             "doc_ids": ["0x-protocol"],
             "grounded_chunks": [
-                "The withdraw function is vulnerable to reentrancy and uses "
-                "checks-effects-interactions."
+                (
+                    "The withdraw function is vulnerable to reentrancy and uses "
+                    "checks-effects-interactions."
+                )
             ],
         }
         report = run_eval(ScriptedPipeline(script), _dataset())

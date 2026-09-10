@@ -27,8 +27,46 @@ jobs:
           # Install only the deps the deterministic tests need (no Ollama,
           # no ChromaDB-side serving, no network). PyMuPDF/sentence-transformers
           # are exercised only by the optional live path, not by unit tests.
-          pip install pytest numpy httpx requests
+          pip install pytest numpy httpx requests fastapi
 
       - name: Run deterministic unit tests
         run: |
           pytest tests/ -v --tb=short
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ruff
+        run: pip install ruff==0.16.7
+
+      - name: Lint with ruff
+        run: ruff check src tests scripts
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Scan dependencies for known vulnerabilities
+        run: |
+          pip install pip-audit
+          # Audit the pinned requirement set directly (no install, no heavy
+          # downloads) — fails the build on any known advisory.
+          pip-audit -r requirements.txt
+
+      - name: Scan for leaked secrets (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

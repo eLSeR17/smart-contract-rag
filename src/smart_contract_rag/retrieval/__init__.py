@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .reranker import RRF_Reranker, Reranker, ScoreFusionReranker
+from .reranker import Reranker, RRF_Reranker, ScoreFusionReranker
 from .retriever import VectorRetriever
 
 __all__ = [

@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from smart_contract_rag.ingest.fetcher import CorpusFetchError, CorpusFetcher
+from smart_contract_rag.ingest.fetcher import CorpusFetcher, CorpusFetchError
 
 
 class FakeResponse:
@@ -149,5 +149,5 @@ class TestCorpusFetcher:
         _write_manifest(manifest_path)
         session = FakeSession({})  # nothing available -> 404
         fetcher = CorpusFetcher(manifest_path, raw_dir, delay_seconds=0.0, session=session)
-        with pytest.raises(Exception):
+        with pytest.raises(CorpusFetchError):
             fetcher.fetch_all()

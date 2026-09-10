@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from smart_contract_rag.generation.grounding import NaiveGroundedTextCheck
 from smart_contract_rag.guardrails import OutputGuardrail, QueryGuardrail
 from smart_contract_rag.models import GroundingResult, RAGResponse, SourceRef
 
