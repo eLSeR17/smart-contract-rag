@@ -1,0 +1,18 @@
+# SmartContractRAG — demo UI dependencies (staging/demo_ui/requirements.txt)
+# ---------------------------------------------------------------------------
+# Minimal by design: the live demo only needs Streamlit (web framework) and
+# requests (HTTP client for the REST API mode). Both are massively adopted,
+# officially maintained packages — no dubious dependencies.
+#
+# Full embedded mode (local pipeline: retriever + reranker + Ollama generator)
+# additionally requires the repository's own dependencies — install them from
+# the repository root first:
+#   pip install -r requirements.txt   # repo root (pipeline deps)
+# or install the package in editable mode:
+#   pip install -e .
+#
+# Version floors are conservative (>=,<) so local runs and HF Spaces stay
+# reproducible: streamlit>=1.41 guarantees the element APIs used by app.py
+# (tabs, cache_resource, divider); requests matches the repo pin.
+streamlit>=1.41,<2.0
+requests>=2.28,<3.0

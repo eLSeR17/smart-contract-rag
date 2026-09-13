@@ -1,0 +1,19 @@
+# SmartContractRAG — demo UI theme and server settings.
+#
+# Discreet, professional light theme. The accent mirrors the repo's
+# "grounded evidence" identity (deep navy blue). Settings here apply both
+# locally and on Hugging Face Spaces (Streamlit SDK picks up .streamlit/).
+
+[theme]
+base = "light"
+primaryColor = "#0F4C81"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F4F6F9"
+textColor = "#1C2430"
+font = "sans serif"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false
