@@ -18,9 +18,11 @@ cannot answer without retrieved evidence — hallucination is refused by design.
 Full live-run evidence (environment, corpus, index, eval table): `docs/LIVE_DEMO.md`.
 
 An **interactive demo UI** (Streamlit: Ask / Evals / About, three connection
-modes) ships in [`demo_ui/`](demo_ui/README.md) and is deployable for free on
-Hugging Face Spaces — step-by-step in [`demo_ui/README.md`](demo_ui/README.md).
-This repository's own README will link the public Space URL once it is deployed.
+modes) ships in [`demo_ui/`](demo_ui/README.md) and is **live at
+<https://smart-contract-rag-3wnnafjfnjku54baybdec2.streamlit.app/>** — the
+evidence-first hosted edition (retrieval + grounded citations; the full
+generating pipeline runs locally, see [`docs/LIVE_DEMO.md`](docs/LIVE_DEMO.md)).
+Step-by-step deploy guide in [`demo_ui/README.md`](demo_ui/README.md).
 
 ## Problem
 
@@ -304,8 +306,8 @@ answered to refused in the A/B run).
   `scripts/run_eval.py` exit codes (PASS/WARN/FAIL).
 - ✅ **REST API server (this round)**: auth, rate limit, metrics, docs (`docs/API.md`).
 - ✅ **Live demo UI (implemented)**: `demo_ui/` — a small Streamlit query UI
-  (Ask / Evals / About) on top of the API, deployable for free on Hugging Face
-  Spaces ([`demo_ui/README.md`](demo_ui/README.md)).
+  (Ask / Evals / About) on top of the API, **live on Streamlit Community Cloud**
+  ([`demo_ui/README.md`](demo_ui/README.md)).
 - **Larger corpus**: expand the manifest with more published audits + threat models.
 - ✅ **Semantic grounding (implemented, experimental)**: `EntailmentGroundedTextCheck`
   NLI gate (cross-encoder, default public `typeform/distilbert-base-uncased-mnli`)
