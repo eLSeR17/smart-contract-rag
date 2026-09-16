@@ -17,6 +17,11 @@ cannot answer without retrieved evidence — hallucination is refused by design.
 
 Full live-run evidence (environment, corpus, index, eval table): `docs/LIVE_DEMO.md`.
 
+An **interactive demo UI** (Streamlit: Ask / Evals / About, three connection
+modes) ships in [`demo_ui/`](demo_ui/README.md) and is deployable for free on
+Hugging Face Spaces — step-by-step in [`demo_ui/README.md`](demo_ui/README.md).
+This repository's own README will link the public Space URL once it is deployed.
+
 ## Problem
 
 Language models confidently answer questions even when they lack the facts. For
@@ -298,7 +303,9 @@ answered to refused in the A/B run).
   citation/context scoring and hallucination-rate regression, wired into CI via
   `scripts/run_eval.py` exit codes (PASS/WARN/FAIL).
 - ✅ **REST API server (this round)**: auth, rate limit, metrics, docs (`docs/API.md`).
-- **Live demo UI**: a small query UI (Hugging Face Spaces / Streamlit) on top of the API.
+- ✅ **Live demo UI (implemented)**: `demo_ui/` — a small Streamlit query UI
+  (Ask / Evals / About) on top of the API, deployable for free on Hugging Face
+  Spaces ([`demo_ui/README.md`](demo_ui/README.md)).
 - **Larger corpus**: expand the manifest with more published audits + threat models.
 - ✅ **Semantic grounding (implemented, experimental)**: `EntailmentGroundedTextCheck`
   NLI gate (cross-encoder, default public `typeform/distilbert-base-uncased-mnli`)
