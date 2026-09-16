@@ -28,6 +28,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import pandas as pd
 import sys
 from pathlib import Path
 from typing import Any
@@ -874,13 +875,114 @@ def _render_about_tab() -> None:
 # ---------------------------------------------------------------------------
 
 
+
+
+# ---------------------------------------------------------------------------
+# Analytics tab
+# ---------------------------------------------------------------------------
+
+_NAMES = {
+    "0x-protocol": "0x Protocol",
+    "aave-v3": "Aave V3",
+    "balancer-managedpool": "Balancer Managed Pool",
+    "balancerv2": "Balancer V2",
+    "beanstalk-security": "Beanstalk",
+    "fraxlend-fraxferry": "FraxLend / FraxFerry",
+    "increment-security": "Increment",
+    "maplefinance-v1": "Maple Finance V1",
+    "optimism-security": "Optimism L2",
+    "reserve-security": "Reserve Protocol",
+}
+
+
+@st.cache_data
+def _load_analytics() -> dict | None:
+    """Read the analytics JSON produced by scripts/extract_analytics.py."""
+    path = Path(__file__).resolve().parent.parent / "data" / "analytics" / "analytics.json"
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def _render_analytics_tab() -> None:
+    """Analytics tab: deterministic statistics extracted from the audit corpus."""
+    st.header("Corpus analytics")
+    st.caption(
+        "Deterministic, no-LLM extraction from the 10 Trail of Bits reports "
+        "embedded in the corpus. Numbers are cross-verified against the reports' "
+        "own declared totals."
+    )
+    data = _load_analytics()
+    if data is None:
+        st.info("Analytics data not generated yet -- run scripts/extract_analytics.py.")
+        return
+
+    s = data["summary"]
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Reports", s["reports"])
+    c2.metric("Findings", s["findings_total"])
+    c3.metric("High severity", s["severity"]["High"])
+    c4.metric("Informational", s["severity"]["Informational"])
+
+    rows = []
+    for r in data["reports"]:
+        sev = r["severity"]
+        rows.append({
+            "Protocol": _NAMES.get(r["doc_id"], r["doc_id"]),
+            "Findings": r["findings"]["severity_labels"],
+            "High": sev["High"],
+            "Medium": sev["Medium"],
+            "Low": sev["Low"],
+            "Informational": sev["Informational"],
+            "Undetermined": sev["Undetermined"],
+            "Date": r["date"] or "*",
+            "Top categories": ", ".join(t for t, _ in r["types"][:2]) or "*",
+            "Tools": ", ".join(r["tools"]) or "*",
+        })
+    df = pd.DataFrame(rows)
+
+    st.subheader("Findings per protocol")
+    st.bar_chart(df[["Protocol", "Findings"]].set_index("Protocol"), horizontal=True)
+
+    st.subheader("Severity distribution")
+    st.bar_chart(df.set_index("Protocol")[["High", "Medium", "Low", "Informational", "Undetermined"]])
+
+    st.subheader("Top vulnerability categories (author-provided types)")
+    cats = s["types"]
+    st.bar_chart(
+        pd.DataFrame([{"Category": t, "Count": n} for t, n in cats[:8]]).set_index("Category"),
+        horizontal=True,
+    )
+
+    st.subheader("Details per report")
+    st.dataframe(df, use_container_width=True, hide_index=True)
+
+    with st.expander("How was this data generated?"):
+        st.markdown(
+            "- Extracted deterministically by scripts/extract_analytics.py from the "
+            "corpus chunks (no LLM, no network, fully reproducible).\n"
+            "- Per-finding Severity: and Finding ID: markers are two independent "
+            "counters; they agree on every report (verified).\n"
+            "- Type: values are the reports' own CATEGORY BREAKDOWN labels, not "
+            "LLM-generated guesses.\n"
+            "- Full verification: run python scripts/extract_analytics.py --verify."
+        )
+
+
 def main() -> None:
-    """Render the three-tab demo application."""
-    tab_ask, tab_evals, tab_about = st.tabs(["Ask", "Evals", "About"])
+    """Render the four-tab demo application."""
+    tab_ask, tab_evals, tab_analytics, tab_about = st.tabs(
+        ["Ask", "Evals", "Analytics", "About"]
+    )
     with tab_ask:
         _render_ask_tab()
     with tab_evals:
         _render_evals_tab()
+    with tab_analytics:
+        _render_analytics_tab()
     with tab_about:
         _render_about_tab()
 

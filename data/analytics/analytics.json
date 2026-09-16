@@ -1,0 +1,823 @@
+{
+  "generated_by": "scripts/extract_analytics.py",
+  "source": "persistent ChromaDB index (10 documents, 546 chunks)",
+  "note": "Deterministic, no-LLM extraction from the report text embedded in the corpus. Per-report finding counts are cross-checked with two independent markers (Severity: labels vs Finding ID: occurrences); `Type:` values are the reports' own CATEGORY BREAKDOWN labels.",
+  "summary": {
+    "reports": 10,
+    "chunks": 546,
+    "findings_total": 117,
+    "severity": {
+      "Critical": 0,
+      "High": 24,
+      "Medium": 23,
+      "Low": 23,
+      "Informational": 41,
+      "Undetermined": 6
+    },
+    "types": [
+      [
+        "Data Validation",
+        65
+      ],
+      [
+        "Undefined Behavior",
+        23
+      ],
+      [
+        "Access Controls",
+        7
+      ],
+      [
+        "Timing",
+        5
+      ],
+      [
+        "Auditing and Logging",
+        3
+      ],
+      [
+        "Economic",
+        3
+      ],
+      [
+        "Patching",
+        2
+      ],
+      [
+        "Configuration",
+        2
+      ],
+      [
+        "Denial of Service",
+        1
+      ],
+      [
+        "Documentation",
+        1
+      ],
+      [
+        "Numerics",
+        1
+      ],
+      [
+        "Authentication",
+        1
+      ],
+      [
+        "Configuration ",
+        1
+      ],
+      [
+        "Auditing and Logging ",
+        1
+      ],
+      [
+        "Testing",
+        1
+      ]
+    ],
+    "tools": [
+      "Echidna",
+      "Manticore",
+      "Slither",
+      "remix",
+      "solc"
+    ]
+  },
+  "reports": [
+    {
+      "doc_id": "0x-protocol",
+      "chunks": 83,
+      "date": "October 4, 2019",
+      "findings": {
+        "blocks": 23,
+        "severity_labels": 23,
+        "finding_id_labels": 23,
+        "declared": [
+          23
+        ],
+        "consistent": true
+      },
+      "severity": {
+        "Critical": 0,
+        "High": 3,
+        "Medium": 7,
+        "Low": 2,
+        "Informational": 11,
+        "Undetermined": 0
+      },
+      "types": [
+        [
+          "Data Validation",
+          11
+        ],
+        [
+          "Access Controls",
+          4
+        ],
+        [
+          "Undefined Behavior",
+          2
+        ],
+        [
+          "Timing",
+          2
+        ],
+        [
+          "Denial of Service",
+          1
+        ],
+        [
+          "Auditing and Logging",
+          1
+        ],
+        [
+          "Documentation",
+          1
+        ],
+        [
+          "Numerics",
+          1
+        ]
+      ],
+      "person_weeks": 8,
+      "engineers": null,
+      "tools": [
+        "Echidna",
+        "Manticore",
+        "Slither"
+      ],
+      "findings_sample": [
+        {
+          "num": 1,
+          "title": "Fee refunds incentivize transaction centralization through market makers",
+          "severity": "Low",
+          "type": "Undefined Behavior",
+          "finding_id": "TOB-0x-001"
+        },
+        {
+          "num": 2,
+          "title": "Market makers have a reduced cost for performing front-running attacks",
+          "severity": "Medium",
+          "type": "Timing",
+          "finding_id": "TOB-0x-002"
+        },
+        {
+          "num": 3,
+          "title": "cancelOrdersUpTo can be used to permanently block future orders",
+          "severity": "High",
+          "type": "Data Validation",
+          "finding_id": "TOB-0x-003"
+        },
+        {
+          "num": 4,
+          "title": "setSignatureValidatorApproval race condition may be exploitable",
+          "severity": "Medium",
+          "type": "Timing",
+          "finding_id": "TOB-0x-004"
+        }
+      ]
+    },
+    {
+      "doc_id": "aave-v3",
+      "chunks": 54,
+      "date": "November 29, 2021",
+      "findings": {
+        "blocks": 15,
+        "severity_labels": 15,
+        "finding_id_labels": 15,
+        "declared": [
+          15
+        ],
+        "consistent": true
+      },
+      "severity": {
+        "Critical": 0,
+        "High": 5,
+        "Medium": 1,
+        "Low": 2,
+        "Informational": 7,
+        "Undetermined": 0
+      },
+      "types": [
+        [
+          "Data Validation",
+          8
+        ],
+        [
+          "Undefined Behavior",
+          4
+        ],
+        [
+          "Authentication",
+          1
+        ],
+        [
+          "Configuration ",
+          1
+        ],
+        [
+          "Auditing and Logging ",
+          1
+        ]
+      ],
+      "person_weeks": 12,
+      "engineers": 3,
+      "tools": [
+        "Echidna",
+        "Manticore",
+        "Slither",
+        "remix",
+        "solc"
+      ],
+      "findings_sample": [
+        {
+          "num": 1,
+          "title": "Solidity compiler optimizations can be problematic",
+          "severity": "Informational",
+          "type": "Undefined Behavior",
+          "finding_id": ""
+        },
+        {
+          "num": 2,
+          "title": "Lack of chainID validation allows attackers to reuse signatures across forks",
+          "severity": "High",
+          "type": "Authentication",
+          "finding_id": ""
+        },
+        {
+          "num": 3,
+          "title": "Risks associated with EIP-2612",
+          "severity": "Informational",
+          "type": "Configuration ",
+          "finding_id": ""
+        },
+        {
+          "num": 4,
+          "title": "Insufficient Repay event parameters",
+          "severity": "Informational",
+          "type": "Auditing and Logging ",
+          "finding_id": ""
+        }
+      ]
+    },
+    {
+      "doc_id": "balancer-managedpool",
+      "chunks": 35,
+      "date": "December 5, 2022",
+      "findings": {
+        "blocks": 3,
+        "severity_labels": 3,
+        "finding_id_labels": 3,
+        "declared": [],
+        "consistent": true
+      },
+      "severity": {
+        "Critical": 0,
+        "High": 0,
+        "Medium": 0,
+        "Low": 0,
+        "Informational": 3,
+        "Undetermined": 0
+      },
+      "types": [
+        [
+          "Undefined Behavior",
+          1
+        ],
+        [
+          "Testing",
+          1
+        ],
+        [
+          "Patching",
+          1
+        ]
+      ],
+      "person_weeks": null,
+      "engineers": null,
+      "tools": [
+        "Echidna",
+        "Manticore",
+        "Slither"
+      ],
+      "findings_sample": [
+        {
+          "num": 1,
+          "title": "Pool owners may not receive BPT payouts",
+          "severity": "Informational",
+          "type": "Undefined Behavior",
+          "finding_id": "TOB-BAL-MNG-1"
+        },
+        {
+          "num": 2,
+          "title": "Test suite inconsistencies / failures",
+          "severity": "Informational",
+          "type": "Testing",
+          "finding_id": "TOB-BAL-MNG-2"
+        },
+        {
+          "num": 3,
+          "title": "Use of outdated libraries",
+          "severity": "Informational",
+          "type": "Patching",
+          "finding_id": "TOB-BAL-MNG-3"
+        }
+      ]
+    },
+    {
+      "doc_id": "balancerv2",
+      "chunks": 64,
+      "date": "April 5, 2021",
+      "findings": {
+        "blocks": 14,
+        "severity_labels": 14,
+        "finding_id_labels": 14,
+        "declared": [
+          14
+        ],
+        "consistent": true
+      },
+      "severity": {
+        "Critical": 0,
+        "High": 2,
+        "Medium": 3,
+        "Low": 5,
+        "Informational": 3,
+        "Undetermined": 1
+      },
+      "types": [
+        [
+          "Data Validation",
+          8
+        ],
+        [
+          "Undefined Behavior",
+          4
+        ],
+        [
+          "Access Controls",
+          1
+        ],
+        [
+          "Auditing and Logging",
+          1
+        ]
+      ],
+      "person_weeks": 4,
+      "engineers": null,
+      "tools": [
+        "Echidna",
+        "Manticore",
+        "Slither",
+        "remix",
+        "solc"
+      ],
+      "findings_sample": [
+        {
+          "num": 1,
+          "title": "Malicious manager can reinvest tokens to drain the pool",
+          "severity": "High",
+          "type": "Undefined Behavior",
+          "finding_id": "TOB-BALANCER-001"
+        },
+        {
+          "num": 2,
+          "title": "Transfer to zero can lead to unexpected burns",
+          "severity": "Informational",
+          "type": "Access Controls",
+          "finding_id": "TOB-BALANCER-002"
+        },
+        {
+          "num": 3,
+          "title": "Solidity compiler optimizations can be dangerous",
+          "severity": "Informational",
+          "type": "Undefined Behavior",
+          "finding_id": "TOB-BALANCER-003"
+        },
+        {
+          "num": 4,
+          "title": "Missing events for critical operations",
+          "severity": "Informational",
+          "type": "Auditing and Logging",
+          "finding_id": "TOB-BALANCER-004"
+        }
+      ]
+    },
+    {
+      "doc_id": "beanstalk-security",
+      "chunks": 61,
+      "date": "July 22, 2022",
+      "findings": {
+        "blocks": 13,
+        "severity_labels": 13,
+        "finding_id_labels": 13,
+        "declared": [],
+        "consistent": true
+      },
+      "severity": {
+        "Critical": 0,
+        "High": 3,
+        "Medium": 3,
+        "Low": 1,
+        "Informational": 3,
+        "Undetermined": 3
+      },
+      "types": [
+        [
+          "Data Validation",
+          8
+        ],
+        [
+          "Economic",
+          3
+        ],
+        [
+          "Undefined Behavior",
+          2
+        ]
+      ],
+      "person_weeks": null,
+      "engineers": null,
+      "tools": [
+        "Echidna",
+        "Manticore",
+        "Slither",
+        "remix",
+        "solc"
+      ],
+      "findings_sample": [
+        {
+          "num": 1,
+          "title": "variable",
+          "severity": "Medium",
+          "type": "Data Validation",
+          "finding_id": "TOB-BEANS-001"
+        },
+        {
+          "num": 2,
+          "title": "Lack of a two-step process for ownership transfer",
+          "severity": "High",
+          "type": "Data Validation",
+          "finding_id": "TOB-BEANS-002"
+        },
+        {
+          "num": 3,
+          "title": "minted",
+          "severity": "Medium",
+          "type": "Data Validation",
+          "finding_id": "TOB-BEANS-003"
+        },
+        {
+          "num": 4,
+          "title": "Risk of Fertilizer id collision that could result in loss of funds",
+          "severity": "High",
+          "type": "Data Validation",
+          "finding_id": "TOB-BEANS-004"
+        }
+      ]
+    },
+    {
+      "doc_id": "fraxlend-fraxferry",
+      "chunks": 49,
+      "date": "November 22, 2022",
+      "findings": {
+        "blocks": 13,
+        "severity_labels": 13,
+        "finding_id_labels": 13,
+        "declared": [],
+        "consistent": true
+      },
+      "severity": {
+        "Critical": 0,
+        "High": 1,
+        "Medium": 4,
+        "Low": 5,
+        "Informational": 2,
+        "Undetermined": 1
+      },
+      "types": [
+        [
+          "Data Validation",
+          8
+        ],
+        [
+          "Undefined Behavior",
+          3
+        ],
+        [
+          "Configuration",
+          1
+        ],
+        [
+          "Auditing and Logging",
+          1
+        ]
+      ],
+      "person_weeks": null,
+      "engineers": null,
+      "tools": [
+        "Echidna",
+        "Manticore",
+        "Slither"
+      ],
+      "findings_sample": [
+        {
+          "num": 1,
+          "title": "Lack of two-step process for contract ownership changes",
+          "severity": "Medium",
+          "type": "Data Validation",
+          "finding_id": "TOB-FXLEND-1"
+        },
+        {
+          "num": 2,
+          "title": "Missing checks of constructor/initialization parameters",
+          "severity": "Low",
+          "type": "Data Validation",
+          "finding_id": "TOB-FXLEND-2"
+        },
+        {
+          "num": 3,
+          "title": "Incorrect application of penalty fee rate",
+          "severity": "Medium",
+          "type": "Undefined Behavior",
+          "finding_id": "TOB-FXLEND-3"
+        },
+        {
+          "num": 4,
+          "title": "Improper validation of Chainlink data",
+          "severity": "Low",
+          "type": "Data Validation",
+          "finding_id": "TOB-FXLEND-4"
+        }
+      ]
+    },
+    {
+      "doc_id": "increment-security",
+      "chunks": 56,
+      "date": "November 10, 2022",
+      "findings": {
+        "blocks": 13,
+        "severity_labels": 13,
+        "finding_id_labels": 13,
+        "declared": [],
+        "consistent": true
+      },
+      "severity": {
+        "Critical": 0,
+        "High": 3,
+        "Medium": 3,
+        "Low": 2,
+        "Informational": 5,
+        "Undetermined": 0
+      },
+      "types": [
+        [
+          "Data Validation",
+          5
+        ],
+        [
+          "Undefined Behavior",
+          3
+        ],
+        [
+          "Timing",
+          2
+        ],
+        [
+          "Access Controls",
+          1
+        ],
+        [
+          "Patching",
+          1
+        ],
+        [
+          "Configuration",
+          1
+        ]
+      ],
+      "person_weeks": null,
+      "engineers": null,
+      "tools": [
+        "Echidna"
+      ],
+      "findings_sample": [
+        {
+          "num": 1,
+          "title": "Governance role is a single point of failure",
+          "severity": "High",
+          "type": "Access Controls",
+          "finding_id": "TOB-INC-1"
+        },
+        {
+          "num": 2,
+          "title": "Inconsistent lower bounds on collateral weights",
+          "severity": "Medium",
+          "type": "Data Validation",
+          "finding_id": "TOB-INC-2"
+        },
+        {
+          "num": 3,
+          "title": "Solidity compiler optimizations can be problematic",
+          "severity": "Informational",
+          "type": "Undefined Behavior",
+          "finding_id": "TOB-INC-3"
+        },
+        {
+          "num": 4,
+          "title": "Support for multiple reserve tokens allows for arbitrage",
+          "severity": "Informational",
+          "type": "Undefined Behavior",
+          "finding_id": "TOB-INC-4"
+        }
+      ]
+    },
+    {
+      "doc_id": "maplefinance-v1",
+      "chunks": 38,
+      "date": "March 14, 2022",
+      "findings": {
+        "blocks": 7,
+        "severity_labels": 7,
+        "finding_id_labels": 7,
+        "declared": [],
+        "consistent": true
+      },
+      "severity": {
+        "Critical": 0,
+        "High": 2,
+        "Medium": 0,
+        "Low": 3,
+        "Informational": 2,
+        "Undetermined": 0
+      },
+      "types": [
+        [
+          "Data Validation",
+          4
+        ],
+        [
+          "Undefined Behavior",
+          2
+        ],
+        [
+          "Timing",
+          1
+        ]
+      ],
+      "person_weeks": null,
+      "engineers": null,
+      "tools": [
+        "Echidna",
+        "Manticore",
+        "Slither",
+        "remix",
+        "solc"
+      ],
+      "findings_sample": [
+        {
+          "num": 1,
+          "title": "Risk of reuse of signatures across forks due to lack of chain ID validation",
+          "severity": "High",
+          "type": "Data Validation",
+          "finding_id": "TOB-MPL-01"
+        },
+        {
+          "num": 2,
+          "title": "Risk of token theft due to race condition in ERC20’s approve function",
+          "severity": "High",
+          "type": "Timing",
+          "finding_id": "TOB-MPL-02"
+        },
+        {
+          "num": 3,
+          "title": "Missing check on newAsset’s decimals",
+          "severity": "Low",
+          "type": "Data Validation",
+          "finding_id": "TOB-MPL-03"
+        },
+        {
+          "num": 4,
+          "title": "Lack of zero address checks",
+          "severity": "Low",
+          "type": "Data Validation",
+          "finding_id": "TOB-MPL-04"
+        }
+      ]
+    },
+    {
+      "doc_id": "optimism-security",
+      "chunks": 35,
+      "date": "November 10, 2022",
+      "findings": {
+        "blocks": 1,
+        "severity_labels": 1,
+        "finding_id_labels": 1,
+        "declared": [],
+        "consistent": true
+      },
+      "severity": {
+        "Critical": 0,
+        "High": 0,
+        "Medium": 0,
+        "Low": 0,
+        "Informational": 0,
+        "Undetermined": 1
+      },
+      "types": [
+        [
+          "Data Validation",
+          1
+        ]
+      ],
+      "person_weeks": null,
+      "engineers": null,
+      "tools": [
+        "Echidna",
+        "Slither"
+      ],
+      "findings_sample": [
+        {
+          "num": 1,
+          "title": "Risk of misconfigured GasPriceOracle state variables that can lock L2",
+          "severity": "Undetermined",
+          "type": "Data Validation",
+          "finding_id": "TOB-OPTEST-1"
+        }
+      ]
+    },
+    {
+      "doc_id": "reserve-security",
+      "chunks": 71,
+      "date": "August 11, 2022",
+      "findings": {
+        "blocks": 15,
+        "severity_labels": 15,
+        "finding_id_labels": 15,
+        "declared": [],
+        "consistent": true
+      },
+      "severity": {
+        "Critical": 0,
+        "High": 5,
+        "Medium": 2,
+        "Low": 3,
+        "Informational": 5,
+        "Undetermined": 0
+      },
+      "types": [
+        [
+          "Data Validation",
+          12
+        ],
+        [
+          "Undefined Behavior",
+          2
+        ],
+        [
+          "Access Controls",
+          1
+        ]
+      ],
+      "person_weeks": null,
+      "engineers": null,
+      "tools": [
+        "Echidna",
+        "Slither",
+        "remix",
+        "solc"
+      ],
+      "findings_sample": [
+        {
+          "num": 1,
+          "title": "Solidity compiler optimizations can be problematic",
+          "severity": "Informational",
+          "type": "Undefined Behavior",
+          "finding_id": "TOB-RES-1"
+        },
+        {
+          "num": 2,
+          "title": "Lack of a two-step process for contract ownership changes",
+          "severity": "High",
+          "type": "Data Validation",
+          "finding_id": "TOB-RES-2"
+        },
+        {
+          "num": 3,
+          "title": "behavior",
+          "severity": "Medium",
+          "type": "Data Validation",
+          "finding_id": "TOB-RES-3"
+        },
+        {
+          "num": 4,
+          "title": "All auction initiation attempts may fail",
+          "severity": "High",
+          "type": "Data Validation",
+          "finding_id": "TOB-RES-4"
+        }
+      ]
+    }
+  ]
+}
