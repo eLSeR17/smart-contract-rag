@@ -1,18 +1,23 @@
-# SmartContractRAG — demo UI dependencies (staging/demo_ui/requirements.txt)
+# SmartContractRAG — demo UI dependencies (demo_ui/requirements.txt)
 # ---------------------------------------------------------------------------
-# Minimal by design: the live demo only needs Streamlit (web framework) and
-# requests (HTTP client for the REST API mode). Both are massively adopted,
-# officially maintained packages — no dubious dependencies.
+# Minimal by design: the live demo needs Streamlit (web framework) and requests
+# (HTTP client for the REST API mode). Both are massively adopted, officially
+# maintained packages — no dubious dependencies.
 #
-# Full embedded mode (local pipeline: retriever + reranker + Ollama generator)
-# additionally requires the repository's own dependencies — install them from
-# the repository root first:
-#   pip install -r requirements.txt   # repo root (pipeline deps)
-# or install the package in editable mode:
-#   pip install -e .
+# Evidence-first mode (the free Streamlit Community Cloud deploy and the local
+# fully-embedded runs) additionally needs the retrieval stack of the repository
+# pipeline: sentence-transformers (local embeddings) and chromadb (in-process
+# vector store). Pins mirror the repository pyproject.toml so the deployed app
+# reads the same index the repo builds. transformers is a hard dependency of
+# sentence-transformers >=5.5 (floor 5.10 clears PYSEC-2026-2288/2289/2290/3929);
+# numpy is required by both.
 #
-# Version floors are conservative (>=,<) so local runs and HF Spaces stay
+# Version floors are conservative (>=,<) so local runs and Community Cloud stay
 # reproducible: streamlit>=1.41 guarantees the element APIs used by app.py
 # (tabs, cache_resource, divider); requests matches the repo pin.
 streamlit>=1.41,<2.0
 requests>=2.28,<3.0
+numpy>=1.24,<2.0
+chromadb>=0.4.22,<1.0
+sentence-transformers>=5.5,<6.0
+transformers>=5.10,<6.0

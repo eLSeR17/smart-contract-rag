@@ -850,9 +850,10 @@ def _render_about_tab() -> None:
         "`smart_contract_rag` from the repo and runs the full pipeline locally.\n"
         "- **Evidence-first mode** — embedded, but Ollama is unreachable: "
         "retrieval and grounding still run; only answer generation is skipped.\n"
-        "- On **Hugging Face Spaces** there is no route back to your local "
-        "Ollama, so API mode is the recommended deployment — step-by-step in "
-        "`demo_ui/README.md`."
+        "- On **hosted platforms (Streamlit Community Cloud, Hugging Face "
+        "Spaces)** there is no route back to your local Ollama — the app "
+        "runs in evidence-first mode (full REST API mode when "
+        "`SCRAG_API_URL` is set). Step-by-step in `demo_ui/README.md`."
     )
 
     st.subheader("Honest limitations")

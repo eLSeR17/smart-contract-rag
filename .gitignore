@@ -21,6 +21,9 @@ data/corpus/raw/*
 data/corpus/*.part
 
 # Persistent vector stores
+# NOTE: data/chroma/ is FORCE-ADDED to git (git add -f) so the free
+# Streamlit Community Cloud deploy can run evidence-first without a
+# build step. Re-run `git add -f data/chroma` if the index is rebuilt.
 data/chroma/
 *.chroma/
 

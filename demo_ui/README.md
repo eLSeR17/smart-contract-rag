@@ -2,7 +2,8 @@
 
 > A live, interactive front end for the
 > [SmartContractRAG](https://github.com/eLSeR17/smart-contract-rag) grounded
-> RAG system — deployable for free on Hugging Face Spaces.
+> RAG system — deployable for free on **Streamlit Community Cloud**
+> (Hugging Face Spaces also works, with a paid PRO plan).
 
 ## What this is
 
@@ -14,7 +15,7 @@ only hard dependencies. The app connects in one of three ways:
 
 | Mode | Trigger | Behaviour |
 |------|---------|-----------|
-| REST API | `SCRAG_API_URL` set | `POST /query` to the deployed FastAPI server (recommended; the only mode that works on HF Spaces) |
+| REST API | `SCRAG_API_URL` set | `POST /query` to the deployed FastAPI server (full generation; requires hosting the API) |
 | Embedded full | no `SCRAG_API_URL`, package + index + Ollama reachable | runs the real pipeline in-process |
 | Evidence-first | package + index, but Ollama unreachable | shows retrieval + a lexical grounding verdict, no generation |
 
@@ -75,68 +76,54 @@ Without `SCRAG_API_URL` the app auto-detects its mode: full embedded mode when
 Ollama answers the liveness probe, otherwise *evidence-first* mode (retrieval
 + grounding verdict on the question, no generation).
 
-## Deploy on Hugging Face Spaces (free)
+## Deploy on Streamlit Community Cloud (free, recommended)
 
-Honest technical note first: **a free HF Space has no network route back to
-your local machine**, so it cannot reach your local Ollama. Two professional
-deployment shapes exist — pick one.
+> 2026 note: Hugging Face Spaces no longer offers a free compute tier (Gradio
+> and Docker Spaces require a paid PRO plan; only Static Spaces are free). The
+> free hosted option for this Streamlit app is **Streamlit Community Cloud** — an
+> official Streamlit service that connects to GitHub, deploys in minutes and
+> re-deploys on every `git push`.
 
-### Option A — the Space talks to your hosted API (recommended)
+Honest technical note first: no free hosted platform can route back to your
+local machine, so none of them can reach your local Ollama. On hosted
+platforms this app therefore runs in **evidence-first mode** — retrieval plus a
+lexical grounding verdict over the bundled index, without LLM generation. The
+generated answers that the full pipeline produces are documented with real
+outputs in the repository (`docs/LIVE_DEMO.md`).
 
-Deploy the API somewhere with internet (a VPS/VM with Ollama, or any Docker
-host), following `docs/API.md` and `docker-compose.prod.yml`:
+Steps:
 
-```bash
-docker compose -f docker-compose.prod.yml up -d --build   # on that host
-python scripts/create_api_key.py space-key 60             # if SCRAG_AUTH=api_key
-```
+1. Sign in at <https://share.streamlit.io> with your GitHub account (you must
+   have admin access to the repository).
+2. **Create app** → *"Yup, I have an app"*.
+3. Fill in: repository `eLSeR17/smart-contract-rag`, branch `main`, main file
+   path `demo_ui/app.py`.
+4. (Optional) *Advanced settings*: Python 3.12. Do **not** set `SCRAG_API_URL`:
+   without it the app auto-detects *evidence-first* mode (package + index
+   present, Ollama unreachable) and works with zero configuration.
+5. **Deploy**. You get a URL on `*.streamlit.app` (custom subdomain available
+   in the app settings).
+6. Every `git push` to `main` redeploys the app automatically.
 
-Then create the Space:
+The vector index `data/chroma/` is committed to the repository (force-added;
+it is git-ignored otherwise) so Community Cloud can serve evidence-first mode
+without a build step. First query downloads the embedding model (~90 MB) and
+answers in tens of seconds; subsequent ones are fast.
 
-1. Create an account at <https://huggingface.co> and log in.
-2. **New Space** → name it `smart-contract-rag-demo` → SDK: **Streamlit**
-   (simplest: it auto-reads `app.py`, `requirements.txt` and `.streamlit/`,
-   which is exactly this folder's layout), or **Docker** (most control when
-   you need custom system packages or a pinned Python base image — you write
-   a `Dockerfile` that installs `demo_ui/requirements.txt` and runs
-   `streamlit run app.py --server.port 7860`).
-3. Upload the contents of `demo_ui/` (the 5 files/folders above) as the Space
-   root — via the web uploader or a git push of this folder.
-4. Go to **Settings → Variables and secrets** and add:
-   - `SCRAG_API_URL` → `http://<your-host>:8000`
-   - `SCRAG_API_KEY` → the key created above (only if auth is on)
-5. The Space rebuilds and you get a public URL:
-   `https://huggingface.co/spaces/<you>/smart-contract-rag-demo`.
+### Alternative: Hugging Face Spaces (paid PRO)
 
-The demo then works end to end: grounded Ask answers, the Evals golden table
-and the About tab. This is the mode the UI was designed for on Spaces.
+HF Spaces run Gradio/Docker apps on compute plans behind PRO (~9 $/month);
+Static Spaces are free but cannot execute Python. If you already have PRO:
 
-### Option B — fully in the Space, no LLM (evidence-first)
+1. Create a Space with SDK **Docker** (or Gradio) and upload this repository.
+2. Set the Space app file to `demo_ui/app.py`.
+3. Same evidence-first behaviour (no route back to a local Ollama).
 
-If you do not want to host the API, the Space can run the *retrieval only*
-side of the pipeline — no LLM — by bundling the whole repository instead of
-just `demo_ui/`:
+### Full REST API mode (only when you host the API yourself)
 
-1. Upload the **entire repository** as the Space root (`src/`, `data/`,
-   `demo_ui/` all present).
-2. Make sure the Space-root `requirements.txt` unions both sets of deps:
-   append `streamlit` and `requests` to the repo-root `requirements.txt`
-   (a one-line change).
-3. Set the Space app file to `demo_ui/app.py` in the Space settings.
-4. (Recommended) build `data/chroma/` locally first and upload it with the
-   repo — runtime indexing in the Space is slow and downloads the embedder
-   at first use. Note `data/chroma/` is gitignored, so upload it via the web
-   UI or `git add -f`.
-5. Leave `OLLAMA_URL` unset (or point it at an unreachable host).
-
-Result: the **Ask** tab runs in *evidence-first* mode — retrieval, chunk
-scores and the grounding badge work; only answer generation is skipped,
-because no LLM is reachable in the Space. The UI states this clearly
-("evidence-first mode: LLM not reachable").
-
-Alternative (Docker runtime): a Space with a custom `Dockerfile` can install
-the heavy pipeline deps at build time and pre-fetch the embedder — slower to
-build, but the most reproducible shape for evidence-first.
+If you expose the FastAPI server somewhere with internet (`SCRAG_API_URL` +
+optional `SCRAG_API_KEY`), the same app switches to full REST API mode with
+generated, grounded answers. See `docs/API.md` and `docker-compose.prod.yml`.
 
 ### After deploying
 
