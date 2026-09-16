@@ -69,6 +69,23 @@ def _load_chunks() -> dict[str, list[str]]:
     return out
 
 
+_INVISIBLE_ORDS = (
+    set(range(0x200B, 0x2010))      # zero-width/format chars U+200B..U+200F
+    | set(range(0x2028, 0x2030))    # line/paragraph/format separators
+    | set(range(0x2060, 0x2070))    # word joiner, invisible operators
+    | {0xFEFF, 0x00AD, 0x034F}      # BOM, soft hyphen, combining grapheme joiner
+)
+
+
+def _strip_invisible(text: str) -> str:
+    """Remove Unicode format/control chars that PDF extraction leaves behind.
+
+    Built via chr() at runtime so the source file never contains the raw
+    control characters (ruff PLE2502/PLE2515 keep the file lint-clean).
+    """
+    return "".join(c for c in text if ord(c) not in _INVISIBLE_ORDS)
+
+
 def _findings_blocks(text: str) -> list[dict]:
     """Parse per-finding blocks anchored on the `Severity:` labels.
 
@@ -104,10 +121,9 @@ def _findings_blocks(text: str) -> list[dict]:
             if fid and typ and diff:
                 break
         # strip zero-width / invisible Unicode from PDF text artifacts
-        _invisible = re.compile(r"[​-‏ - ⁠-⁩﻿]+")
-        title = _invisible.sub("", title)
-        typ = _invisible.sub("", typ)
-        fid = _invisible.sub("", fid)
+        title = _strip_invisible(title)
+        typ = _strip_invisible(typ)
+        fid = _strip_invisible(fid)
         blocks.append({
             "num": 0,
             "title": title,
@@ -130,13 +146,13 @@ def _declared_findings(text: str) -> list[int]:
     pats = [r"(?:identified|found|uncovered|reported)\s+(\d+)\s+(?:issues|findings|vulnerabilities|flaws)",
             r"Total\s+(\d+)\s*$"]
     for pat in pats:
-        out += [int(m.group(1)) for m in re.finditer(pat, text, re.I | re.M)]
+        out += [int(m.group(1)) for m in re.finditer(pat, text, re.IGNORECASE | re.MULTILINE)]
     return sorted(set(out))
 
 
 def _num_before(text: str, patterns: list[str]) -> int | None:
     for pat in patterns:
-        m = re.search(r"(\d+)\s+" + pat, text, re.I)
+        m = re.search(r"(\d+)\s+" + pat, text, re.IGNORECASE)
         if m:
             return int(m.group(1))
     return None
@@ -179,7 +195,7 @@ def main() -> None:
             "types": types.most_common(),
             "person_weeks": _num_before(text, ["person-[wW]eeks", "person weeks"]),
             "engineers": _num_before(text, ["engineers?", "consultants?"]),
-            "tools": sorted({t for t in TOOLS if re.search(rf"\b{t}\b", text, re.I)}),
+            "tools": sorted({t for t in TOOLS if re.search(rf"\b{t}\b", text, re.IGNORECASE)}),
             "findings_blocks": blocks,
         }
         # integrity: the two independent counters must agree
@@ -194,8 +210,8 @@ def main() -> None:
         for r in reports:
             f = r["findings"]
             print(f"{r['doc_id']:<22}{r['chunks']:>7}{f['blocks']:>7}{f['severity_labels']:>6}"
-                  f"{f['finding_id_labels']:>5}{str(f['declared']):>14}{str(r['person_weeks']):>4}"
-                  f"{str(r['engineers']):>5}  {f['consistent']}")
+                  f"{f['finding_id_labels']:>5}{f['declared']!s:>14}{r['person_weeks']!s:>4}"
+                  f"{r['engineers']!s:>5}  {f['consistent']}")
         return
 
     all_types: dict[str, int] = collections.Counter()
